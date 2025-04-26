@@ -1,0 +1,224 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-primary">
+                {% if user_role == 'Staff' %}Manage Loan Applications {% else %}Review Loan Applications Predictions{% endif %}
+            </h1>
+            <p class="lead">Review and manage loan applications from all applicants.</p>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total</h5>
+                    <h3>{{ total_predictions }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Checked</h5>
+                    <h3>{{ checked_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Unchecked</h5>
+                    <h3>{{ unchecked_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Disputed</h5>
+                    <h3>{{ disputed_count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <a href="{% url 'review_predictions' %}" class="btn {% if not status_filter %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    All Records
+                </a>
+                <a href="{% url 'review_predictions' %}?status=approved" class="btn {% if status_filter == 'approved' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Loan Approved
+                </a>
+                <a href="{% url 'review_predictions' %}?status=rejected" class="btn {% if status_filter == 'rejected' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Loan Rejected
+                </a>      
+                <a href="{% url 'review_predictions' %}?status=checked" class="btn {% if status_filter == 'checked' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Checked
+                </a>
+                <a href="{% url 'review_predictions' %}?status=unchecked" class="btn {% if status_filter == 'unchecked' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Unchecked
+                </a>
+                <a href="{% url 'review_predictions' %}?status=disputed" class="btn {% if status_filter == 'disputed' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Disputed
+                </a>
+                <a href="{% url 'review_predictions' %}?status=overridden" class="btn {% if status_filter == 'overridden' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    <i class="bi bi-pencil-square"></i> Overridden
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Predictions Table -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Application Records</h5>
+        </div>
+        <div class="card-body">
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date and Time</th>
+                                <th>User</th>
+                                <th>Loan Decision</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prediction in page_obj %}
+                                <tr>
+                                    <td>{{ prediction.id }}</td>
+                                    <td>{{ prediction.timestamp|date:"F j, Y, g:i a" }}</td>
+                                    <td>{{ prediction.user.name }}</td>
+                                    <td>
+                                        {% if prediction.loan_approval %}
+                                            <span class="badge bg-success">APPROVED</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">REJECTED</span>
+                                        {% endif %}
+
+                                        {% if prediction.modified_by_staff %}
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-pencil-square"></i> Overridden by Staff
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if prediction.is_checked %}
+                                            <span class="badge bg-success">Checked</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Unchecked</span>
+                                        {% endif %}
+                                        
+                                        {% if prediction.is_satisfactory == True %}
+                                            <span class="badge bg-success">Accepted</span>
+                                        {% elif prediction.is_satisfactory == False %}
+                                            <span class="badge bg-danger">Disputed</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">No Feedback</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+
+                                        <a href="{% url 'staff_aiengineer_prediction_detail' prediction.id %}" class="btn btn-sm btn-primary">View Details</a>
+                                        
+                                        {% if user_role == 'Staff' %}
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                                            <button type="submit" class="btn btn-sm {% if prediction.is_checked %}btn-secondary{% else %}btn-success{% endif %}">
+                                                {% if prediction.is_checked %}
+                                                    <i class="bi bi-x-circle"></i> Unmark
+                                                {% else %}
+                                                    <i class="bi bi-check-circle"></i> Check
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">First</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <a class="page-link" href="#">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </a>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Last</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="alert alert-info">
+                    <p class="mb-0">No records found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4 mb-5">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            Back to {% if user_role == 'Staff' %}Staff{% else %}AI Engineer{% endif %} Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

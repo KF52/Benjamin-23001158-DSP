@@ -1,0 +1,417 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}MLAAS - Documentation{% endblock %}
+
+{% block content %}
+<div class="documentation-container">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group sticky-top" style="top: 20px;">
+                <a href="#overview" class="list-group-item list-group-item-action">Overview</a>
+                <a href="#architecture" class="list-group-item list-group-item-action">System Architecture</a>
+                <a href="#user-roles" class="list-group-item list-group-item-action">User Roles</a>
+                <a href="#features" class="list-group-item list-group-item-action">Key Features</a>
+                <a href="#technical" class="list-group-item list-group-item-action">Technical Details</a>
+                <a href="#getting-started" class="list-group-item list-group-item-action">Getting Started</a>
+                <a href="#security" class="list-group-item list-group-item-action">Security Features</a>
+                <a href="#contact" class="list-group-item list-group-item-action">Contact Information</a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card shadow-sm mb-5">
+                <div class="card-body">
+                    <h1 class="display-5 fw-bold mb-4">MLAAS Documentation</h1>
+                    <p class="lead">Machine Learning as a Service Platform for Insurance Settlement Predictions</p>
+                    <hr>
+                    
+                    <!-- Overview Section -->
+                    <section id="overview" class="mb-5">
+                        <h2 class="fw-bold">Overview</h2>
+                        <p>MLAAS is a comprehensive web application that provides insurance settlement predictions through advanced machine learning models. The platform follows a modern microservices architecture, combining Django for the web application and FastAPI for the machine learning service.</p>
+                    </section>
+                    
+                    <!-- System Architecture Section -->
+                    <section id="architecture" class="mb-5">
+                        <h2 class="fw-bold">System Architecture</h2>
+                        <p>The application consists of two main components:</p>
+                        <ul>
+                            <li><strong>Django Web Application:</strong> Handles user interface, authentication, and business logic</li>
+                            <li><strong>FastAPI ML Service:</strong> Provides the prediction API and model management functionality</li>
+                        </ul>
+                        <div class="mt-4">
+                            <img src="{% static 'images/architecture-diagram.png' %}" alt="System Architecture Diagram" class="img-fluid rounded border" onerror="this.style.display='none'">
+                        </div>
+                    </section>
+                    
+                    <!-- User Roles Section -->
+                    <section id="user-roles" class="mb-5">
+                        <h2 class="fw-bold">User Roles</h2>
+                        <p>The platform implements role-based access control with four primary user types:</p>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h4 class="mb-0">End User</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Make settlement predictions</li>
+                                    <li>View prediction history</li>
+                                    <li>Provide feedback on predictions</li>
+                                    <li>Manage personal account settings</li>
+                                    <li>View and pay invoices</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h4 class="mb-0">AI Engineer</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Review user predictions</li>
+                                    <li>Manage ML models (upload, activate, delete)</li>
+                                    <li>Configure model parameters</li>
+                                    <li>Monitor model performance</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h4 class="mb-0">Finance Team</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Create and manage invoices</li>
+                                    <li>Track payment status</li>
+                                    <li>Generate financial reports</li>
+                                    <li>Verify payments</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h4 class="mb-0">Administrator</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>Manage user accounts</li>
+                                    <li>View system analytics</li>
+                                    <li>Access all platform features</li>
+                                    <li>Export analytics data</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Key Features Section -->
+                    <section id="features" class="mb-5">
+                        <h2 class="fw-bold">Key Features</h2>
+                        
+                        <div class="accordion" id="featuresAccordion">
+                            <div class="accordion-item">
+                                <h3 class="accordion-header" id="authenticationHeading">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#authenticationCollapse" aria-expanded="true" aria-controls="authenticationCollapse">
+                                        Authentication System
+                                    </button>
+                                </h3>
+                                <div id="authenticationCollapse" class="accordion-collapse collapse show" aria-labelledby="authenticationHeading" data-bs-parent="#featuresAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>Secure login and registration</li>
+                                            <li>JWT-based authentication</li>
+                                            <li>Password reset functionality</li>
+                                            <li>User profile management</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h3 class="accordion-header" id="predictionHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#predictionCollapse" aria-expanded="false" aria-controls="predictionCollapse">
+                                        Prediction Service
+                                    </button>
+                                </h3>
+                                <div id="predictionCollapse" class="accordion-collapse collapse" aria-labelledby="predictionHeading" data-bs-parent="#featuresAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>Input data verification</li>
+                                            <li>Machine learning model selection</li>
+                                            <li>Result visualization</li>
+                                            <li>Feedback collection</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h3 class="accordion-header" id="modelHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#modelCollapse" aria-expanded="false" aria-controls="modelCollapse">
+                                        Model Management
+                                    </button>
+                                </h3>
+                                <div id="modelCollapse" class="accordion-collapse collapse" aria-labelledby="modelHeading" data-bs-parent="#featuresAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>Model upload and versioning</li>
+                                            <li>Active model selection</li>
+                                            <li>Model metrics tracking</li>
+                                            <li>Configuration options</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h3 class="accordion-header" id="invoiceHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#invoiceCollapse" aria-expanded="false" aria-controls="invoiceCollapse">
+                                        Invoice System
+                                    </button>
+                                </h3>
+                                <div id="invoiceCollapse" class="accordion-collapse collapse" aria-labelledby="invoiceHeading" data-bs-parent="#featuresAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>Automated invoice generation</li>
+                                            <li>PDF export functionality</li>
+                                            <li>Secure payment processing (Stripe integration)</li>
+                                            <li>Payment status tracking</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h3 class="accordion-header" id="analyticsHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#analyticsCollapse" aria-expanded="false" aria-controls="analyticsCollapse">
+                                        Analytics Dashboard
+                                    </button>
+                                </h3>
+                                <div id="analyticsCollapse" class="accordion-collapse collapse" aria-labelledby="analyticsHeading" data-bs-parent="#featuresAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>User growth metrics</li>
+                                            <li>Financial statistics</li>
+                                            <li>Prediction accuracy tracking</li>
+                                            <li>System health monitoring</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Technical Details Section -->
+                    <section id="technical" class="mb-5">
+                        <h2 class="fw-bold">Technical Details</h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Frontend</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>Bootstrap 5 framework for responsive design</li>
+                                            <li>Custom CSS for enhanced UI/UX</li>
+                                            <li>Interactive JavaScript components</li>
+                                            <li>Chart.js for data visualization</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Backend</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>Django 5.1 framework</li>
+                                            <li>FastAPI for machine learning service</li>
+                                            <li>PostgreSQL database</li>
+                                            <li>JWT authentication</li>
+                                            <li>REST API endpoints</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Machine Learning</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>Support for multiple model types (.pkl and .h5)</li>
+                                            <li>Standardization/scaling options</li>
+                                            <li>Model metadata storage</li>
+                                            <li>Performance monitoring</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Payment Processing</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>Secure Stripe integration</li>
+                                            <li>Webhook handling for payment status updates</li>
+                                            <li>Invoice PDF generation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Getting Started Section -->
+                    <section id="getting-started" class="mb-5">
+                        <h2 class="fw-bold">Getting Started</h2>
+                        <ol class="list-group list-group-numbered mb-4">
+                            <li class="list-group-item">Register for an account on the platform</li>
+                            <li class="list-group-item">Login with your credentials</li>
+                            <li class="list-group-item">Navigate to the dashboard tailored to your role</li>
+                            <li class="list-group-item">Explore the features available to your user role</li>
+                            <li class="list-group-item">
+                                <div>For prediction service:</div>
+                                <ul class="mt-2">
+                                    <li>Complete the prediction form with claim details</li>
+                                    <li>Review the predicted settlement value</li>
+                                    <li>Provide feedback on accuracy</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </section>
+                    
+                    <!-- Security Features Section -->
+                    <section id="security" class="mb-5">
+                        <h2 class="fw-bold">Security Features</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-group mb-4">
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="bi bi-shield-check text-success me-3 fs-4"></i>
+                                        <div>CSRF protection</div>
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="bi bi-key text-success me-3 fs-4"></i>
+                                        <div>JWT token authentication</div>
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="bi bi-lock text-success me-3 fs-4"></i>
+                                        <div>Secure password storage</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-group mb-4">
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="bi bi-people text-success me-3 fs-4"></i>
+                                        <div>Role-based access control</div>
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="bi bi-graph-up text-success me-3 fs-4"></i>
+                                        <div>API metrics logging</div>
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="bi bi-credit-card text-success me-3 fs-4"></i>
+                                        <div>Secure payment processing</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Contact Information Section -->
+                    <section id="contact" class="mb-5">
+                        <h2 class="fw-bold">Contact Information</h2>
+                        <p>For support or inquiries:</p>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-envelope-fill text-primary me-3 fs-4"></i>
+                                    <div>
+                                        <div class="text-muted small">Email</div>
+                                        <div>info@mlaas-insurance.com</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-telephone-fill text-primary me-3 fs-4"></i>
+                                    <div>
+                                        <div class="text-muted small">Phone</div>
+                                        <div>+44 (0) 123 456 7890</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-geo-alt-fill text-primary me-3 fs-4"></i>
+                                    <div>
+                                        <div class="text-muted small">Address</div>
+                                        <div>123 AI Street, Tech Park, London, UK</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Enable smooth scrolling for in-page navigation
+    document.querySelectorAll('.list-group-item').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                document.querySelector(href).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Highlight active sidebar item based on scroll position
+    window.addEventListener('scroll', function() {
+        const sections = document.querySelectorAll('section[id]');
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        document.querySelectorAll('.list-group-item').forEach(item => {
+            item.classList.remove('active');
+            const href = item.getAttribute('href');
+            if (href === '#' + current) {
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
+{% endblock %}

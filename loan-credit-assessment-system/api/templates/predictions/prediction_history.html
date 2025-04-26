@@ -1,0 +1,104 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}LendX - Prediction History{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-primary">Prediction History</h1>
+            <p class="lead">View your past predictions and their status.</p>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if predictions %}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h5 class="mb-0">Date and Time</h5>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-0">Loan Decision</h5>
+                </div>
+                <div class="col-md-2">
+                    <h5 class="mb-0">Status</h5>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+            </div>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for prediction in predictions %}
+            <li class="list-group-item py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <i class="bi bi-calendar-event text-muted me-2"></i>
+                        {{ prediction.timestamp|date:"F j, Y, g:i a" }}
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex flex-row align-items-center gap-2">
+                            <span class="badge {% if prediction.loan_approval %}bg-success{% else %}bg-danger{% endif %} p-2">
+                                {% if prediction.loan_approval %}APPROVED{% else %}REJECTED{% endif %}
+                            </span>
+                            
+                            {% if prediction.modified_by_staff %}
+                            <span class="badge bg-warning text-dark p-2">
+                                <i class="bi bi-pencil-square"></i> Overriden by Staff
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        {% if prediction.needs_review %}
+                            <span class="badge bg-warning text-dark p-2">Needs Review</span>
+                        {% elif prediction.is_satisfactory == True %}
+                            <span class="badge bg-success p-2">Accepted</span>
+                        {% elif prediction.is_satisfactory == False %}
+                            <span class="badge bg-danger p-2">Disputed</span>
+                        {% else %}
+                            <span class="badge bg-secondary p-2">Pending Feedback</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'prediction_detail' prediction.id %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                            
+                            {% if prediction.is_satisfactory == None %}
+                            <a href="{% url 'prediction_feedback' prediction.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-chat-right-text"></i> Confirm Application
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+
+    <div class="alert alert-info">
+        <p class="mb-0">You haven't made any predictions yet.</p>
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'prediction_form' %}" class="btn btn-primary btn-lg">Make Your First Prediction</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

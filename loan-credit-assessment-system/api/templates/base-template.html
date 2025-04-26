@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LendX - Credit Assessment{% endblock %}</title>
+    <!-- Logo -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.ico' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'images/logo.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/logo.ico' %}">
+    <!-- Bootstrap and other stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <!-- Grey theme override -->
+    <style>
+        :root {
+            --primary-color: #455a64;      /* Blue Grey 700 */
+            --secondary-color: #78909c;    /* Blue Grey 400 */
+            --accent-color: #546e7a;       /* Blue Grey 600 */
+            --light-grey: #eceff1;         /* Blue Grey 50 */
+            --dark-grey: #263238;          /* Blue Grey 900 */
+            --success-color: #43a047;      /* Green 600 */
+            --danger-color: #e53935;       /* Red 600 */
+            --warning-color: #ffb300;      /* Amber 600 */
+            --info-color: #039be5;         /* Light Blue 600 */
+            --light-bg: #f5f7f9;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: #37474f;               /* Blue Grey 800 */
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .navbar-brand span {
+            font-size: 2rem;       /* Makes the text larger */
+            font-weight: 700;      /* Makes the text bold */
+            letter-spacing: -0.5px; /* Optional: gives a more modern look */
+        }
+        
+        .navbar-light .navbar-brand {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .navbar-light .navbar-nav .nav-link {
+            color: var(--dark-grey);
+        }
+        
+        .navbar-light .navbar-nav .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--dark-grey);
+            border-color: var(--dark-grey);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Card styling */
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        /* Text colors */
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        /* Background colors */
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+        
+        .bg-light {
+            background-color: var(--light-grey) !important;
+        }
+        
+        /* Dashboard specific */
+        .dashboard-card {
+            transition: all 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Forms */
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(84, 110, 122, 0.25);
+        }
+        
+        /* Badge colors */
+        .badge.bg-success {
+            background-color: var(--success-color) !important;
+        }
+        
+        .badge.bg-danger {
+            background-color: var(--danger-color) !important;
+        }
+        
+        .badge.bg-warning {
+            background-color: var(--warning-color) !important;
+        }
+        
+        .badge.bg-info {
+            background-color: var(--info-color) !important;
+        }
+        
+        /* Alert styling */
+        .alert-primary {
+            background-color: rgba(69, 90, 100, 0.1);
+            border-color: rgba(69, 90, 100, 0.2);
+            color: var(--primary-color);
+        }
+        
+        /* Footer styling */
+        footer {
+            background-color: white;
+            border-top: 1px solid var(--light-grey);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+        
+        .page-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <span>LendX</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'services' %}">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'pricing' %}active{% endif %}" href="{% url 'pricing' %}">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i> {{ user.name }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'user_profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Login</a>
+                        <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Page content -->
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="text-primary mb-3">LendX</h5>
+                    <p class="mb-3">Transparent AI-powered loan credit assessment for individuals and financial institutions.</p>
+                    <div class="d-flex">
+                        <a href="#" class="me-3 text-secondary"><i class="bi bi-linkedin fs-4"></i></a>
+                        <a href="#" class="me-3 text-secondary"><i class="bi bi-twitter fs-4"></i></a>
+                        <a href="#" class="me-3 text-secondary"><i class="bi bi-facebook fs-4"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h6 class="mb-3">Links</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a href="{% url 'home' %}" class="nav-link p-0 text-muted">Home</a></li>
+                        <li class="nav-item"><a href="{% url 'about' %}" class="nav-link p-0 text-muted">About</a></li>
+                        <li class="nav-item"><a href="{% url 'services' %}" class="nav-link p-0 text-muted">Services</a></li>
+                        <li class="nav-item"><a href="{% url 'pricing' %}" class="nav-link p-0 text-muted">Pricing</a></li>
+                        <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link p-0 text-muted">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h6 class="mb-3">Resources</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a href="{% url 'documentation' %}" class="nav-link p-0 text-muted">Documentation</a></li>
+                        <li class="nav-item"><a href="{% url 'api_documentation' %}" class="nav-link p-0 text-muted">API</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link p-0 text-muted">Blog</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link p-0 text-muted">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="mb-3">Contact Us</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2"><i class="bi bi-envelope me-2"></i> info@LendX.com</li>
+                        <li class="nav-item mb-2"><i class="bi bi-telephone me-2"></i> +1 (555) 123-4567</li>
+                        <li class="nav-item mb-2"><i class="bi bi-geo-alt me-2"></i> 123 Street, London, United Kingdom</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="d-flex flex-column flex-sm-row justify-content-between py-4 mt-3 border-top">
+                <p>&copy; 2025 LendX, Inc. All rights reserved.</p>
+                <ul class="list-unstyled d-flex">
+                    <li class="ms-3"><a class="link-dark" href="#">Terms of Service</a></li>
+                    <li class="ms-3"><a class="link-dark" href="#">Privacy Policy</a></li>
+                    <li class="ms-3"><a class="link-dark" href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <!-- API Metrics logging -->
+    <script>
+        function logApiMetrics(endpoint, startTime, response) {
+            const endTime = performance.now();
+            const latency = endTime - startTime;
+            
+            // Send metrics to your API
+            fetch('{% url "log_api_metrics" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    endpoint: endpoint,
+                    latency: latency,
+                    status_code: response.status
+                })
+            }).catch(error => console.error('Error logging metrics:', error));
+        }
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

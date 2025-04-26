@@ -1,0 +1,90 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}About LendX - Credit Assessment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero section -->
+    <div class="row mb-5 align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-bold mb-4">About LendX</h1>
+            <p class="lead">LendX is changing the credit assessment landscape by combining AI technology with transparency.</p>
+            <p>Traditional credit scoring systems often leave borrowers in the dark about how decisions are made. Our mission is to create a more accessible, fair, and transparent credit assessment process through advanced AI technology.</p>
+            <p>We provide lenders and financial institutions with accurate loan approval predictions while giving borrowers clear explanations about factors affecting the loan decision.</p>
+        </div>
+        <div class="col-lg-6">
+            <img src="{% static 'images/credit score.jpg' %}" alt="Credit Assessment" class="img-fluid rounded shadow-lg">
+        </div>
+    </div>
+    
+    <!-- Our Technology -->
+    <div class="mb-5">
+        <h2 class="text-center mb-4">Our Technology</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">AI-Powered Credit Assessment</h4>
+                        <p>Our machine learning models analyze dozens of financial and personal factors to provide accurate credit risk assessments. The system continuously learns from new data, improving its accuracy over time.</p>
+                        <p>By considering a wide range of relevant factors, our assessments provide a more complete picture than traditional credit scoring systems.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Explainable AI</h4>
+                        <p>We use SHAP (SHapley Additive exPlanations) to make our AI decisions transparent and understandable. This allows borrowers to see exactly which factors influenced their credit assessment and loan decision.</p>
+                        <p>This transparency helps build trust in our system and gives borrowers actionable insights to improve their creditworthiness in loan lending.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Our Values -->
+    <div class="py-5 bg-light rounded-3 mb-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Our Values</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <i class="bi bi-lightbulb text-primary fs-1 mb-3"></i>
+                        <h4>Innovation</h4>
+                        <p>Constantly improving our algorithms and models</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <i class="bi bi-shield-check text-primary fs-1 mb-3"></i>
+                        <h4>Integrity</h4>
+                        <p>Honest and ethical in all our operations</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <i class="bi bi-eye text-primary fs-1 mb-3"></i>
+                        <h4>Transparency</h4>
+                        <p>Clear explanations for every prediction</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <i class="bi bi-people text-primary fs-1 mb-3"></i>
+                        <h4>Fairness</h4>
+                        <p>Unbiased and equitable credit evaluations and loan decision</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact CTA -->
+    <div class="text-center mb-5">
+        <h2 class="mb-3">Ready to Learn More?</h2>
+        <p class="lead mb-4">Reach out to our team to discover how LendX can transform your credit assessment process.</p>
+        <a href="{% url 'contact' %}" class="btn btn-primary btn-lg">Contact Us</a>
+    </div>
+</div>
+{% endblock %}

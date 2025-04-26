@@ -1,0 +1,104 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}Services - LendX Credit Assessment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero section -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold mb-3">Our Credit Assessment Services</h1>
+        <p class="lead col-lg-8 mx-auto">Comprehensive credit risk analysis and assessment solutions for individuals and institutions.</p>
+    </div>
+    
+    <!-- Main services -->
+    <div class="row mb-5 g-4">
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Personal Credit Assessment</h3>
+                </div>
+                <div class="card-body">
+                    <p>Get a comprehensive analysis of your creditworthiness with detailed explanations.</p>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> Loan Approval prediction</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> Personalized improvement recommendations</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> Visual explanation of key factors</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> Historical trend analysis</li>
+                    </ul>
+                    <a href="{% url 'prediction_form' %}" class="btn btn-primary">Sign In</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Financial Institution Solutions</h3>
+                </div>
+                <div class="card-body">
+                    <p>Advanced credit assessment tools for banks, lenders and financial institutions.</p>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> API integration for credit assessment</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> Compliance documentation</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> Batch processing capabilities</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success me-2"></i> Enterprise-level security</li>
+                    </ul>
+                    <a href="{% url 'contact' %}" class="btn btn-primary">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Secondary services -->
+    <h2 class="text-center mb-4">Additional Services</h2>
+    <div class="row mb-5 g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-graph-up text-primary fs-2 me-3"></i>
+                        <h4 class="card-title mb-0">Financial Analysis</h4>
+                    </div>
+                    <p class="card-text">In-depth analysis of financial data to identify trends and patterns that affect creditworthiness.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-people text-primary fs-2 me-3"></i>
+                        <h4 class="card-title mb-0">Personalized Recommendations</h4>
+                    </div>
+                    <p class="card-text">Personalized guidance to help improve your creditworthiness and financial health.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-file-earmark-text text-primary fs-2 me-3"></i>
+                        <h4 class="card-title mb-0">Reporting & Documentation</h4>
+                    </div>
+                    <p class="card-text">Comprehensive reports for loan applications, financial planning, and regulatory compliance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pricing CTA -->
+    <div class="p-5 mb-5 bg-primary text-white rounded-3">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="mb-2">Ready to get started?</h2>
+                <p class="lead mb-0">View our monthly pricing plans and choose the one that meet your needs.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'pricing' %}" class="btn btn-light btn-lg">View Plans</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

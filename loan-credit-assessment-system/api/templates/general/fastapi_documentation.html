@@ -1,0 +1,436 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}LendX - FastAPI Documentation{% endblock %}
+
+{% block content %}
+<div class="fastapi-documentation-container">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group sticky-top" style="top: 20px;">
+                <a href="#overview" class="list-group-item list-group-item-action">Overview</a>
+                <a href="#architecture" class="list-group-item list-group-item-action">Architecture</a>
+                <a href="#endpoints" class="list-group-item list-group-item-action">Endpoints</a>
+                <a href="#models" class="list-group-item list-group-item-action">ML Models</a>
+                <a href="#deployment" class="list-group-item list-group-item-action">Deployment</a>
+                <a href="#security" class="list-group-item list-group-item-action">Security</a>
+                <a href="#examples" class="list-group-item list-group-item-action">Code Examples</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card shadow-sm mb-5">
+                <div class="card-body">
+                    <h1 class="display-5 fw-bold mb-4">FastAPI Documentation</h1>
+                    <p class="lead">Machine Learning microservice powering the LendX Insurance Prediction Platform</p>
+                    <hr>
+                    
+                    <!-- Overview Section -->
+                    <section id="overview" class="mb-5">
+                        <h2 class="fw-bold">Overview</h2>
+                        <p>The FastAPI microservice is a high-performance, Python-based API that handles the machine learning operations for the LendX platform. It provides endpoints for making predictions, model health checks, and model information.</p>
+                        
+                        <div class="alert alert-info mt-3">
+                            <strong>Tech Stack:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>FastAPI framework for high-performance API endpoints</li>
+                                <li>Pydantic for data validation and settings management</li>
+                                <li>Uvicorn ASGI server for production deployment</li>
+                                <li>Machine learning models in scikit-learn, XGBoost, and TensorFlow formats</li>
+                            </ul>
+                        </div>
+                    </section>
+                    
+                    <!-- Architecture Section -->
+                    <section id="architecture" class="mb-5">
+                        <h2 class="fw-bold">Architecture</h2>
+                        <p>The FastAPI service is designed as a stateless microservice that loads ML models at startup and serves prediction requests. The architecture follows modern microservices principles:</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Components</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li><strong>main.py</strong>: Core API implementation</li>
+                                            <li><strong>auth.py</strong>: JWT authentication logic</li>
+                                            <li><strong>active_model.pkl/h5</strong>: Current active model</li>
+                                            <li><strong>active_model_metadata.json</strong>: Model configuration</li>
+                                            <li><strong>preprocessing</strong>: Data scaling and encoding components</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Flow</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ol>
+                                            <li>Client submits request to prediction endpoint</li>
+                                            <li>JWT authentication validates token</li>
+                                            <li>Input data validated with Pydantic models</li>
+                                            <li>Data preprocessed (encoding, scaling)</li>
+                                            <li>ML model generates prediction</li>
+                                            <li>Results formatted and returned to client</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <img src="{% static 'images/architecture-diagram.png' %}" alt="FastAPI Service Architecture" class="img-fluid rounded border" onerror="this.style.display='none'">
+                        </div>
+                    </section>
+                    
+                    <!-- Endpoints Section -->
+                    <section id="endpoints" class="mb-5">
+                        <h2 class="fw-bold">API Endpoints</h2>
+                        <p>The FastAPI service exposes the following endpoints:</p>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>GET</strong> <code>/health</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Description:</strong> Health check endpoint to verify service status</p>
+                                <p><strong>Authentication:</strong> None required</p>
+                                <p><strong>Response:</strong></p>
+                                <pre><code>{
+  "status": "ok",
+  "model": "GradientBoosting v2",
+  "model_type": "GBR",
+  "version": "1.0.0"
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>GET</strong> <code>/model-info</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Description:</strong> Provides details about the currently active ML model</p>
+                                <p><strong>Authentication:</strong> JWT token required</p>
+                                <p><strong>Response:</strong></p>
+                                <pre><code>{
+  "name": "GradientBoosting v2",
+  "description": "Gradient Boosting Regressor trained on insurance claims dataset",
+  "model_type": "GBR",
+  "requires_scaling": true,
+  "file_type": "pkl",
+  "last_updated": "2025-04-10T15:22:10Z"
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>POST</strong> <code>/predict</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Description:</strong> Processes claim data and returns settlement prediction</p>
+                                <p><strong>Authentication:</strong> JWT token required</p>
+                                <p><strong>Request body:</strong></p>
+                                <pre><code>{
+  "age": 45,
+  "gender": "Female",
+  "injury_type": "Minor",
+  "treatment_duration": 60,
+  "employment_status": "Employed",
+  "income": 75000,
+  "dependents": 2,
+  "injury_severity": 3,
+  "permanent_disability": false,
+  "medical_expenses": 15000,
+  "property_damage": 5000
+}</code></pre>
+                                <p><strong>Response:</strong></p>
+                                <pre><code>{
+  "settlement_value": 35000,
+  "confidence_score": 0.87,
+  "model_used": "GradientBoosting v2"
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- ML Models Section -->
+                    <section id="models" class="mb-5">
+                        <h2 class="fw-bold">ML Models</h2>
+                        <p>The service supports multiple machine learning model types:</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Model Type</th>
+                                        <th>File Format</th>
+                                        <th>Description</th>
+                                        <th>Scaling Required</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>GBR</td>
+                                        <td>.pkl</td>
+                                        <td>Gradient Boosting Regressor (scikit-learn)</td>
+                                        <td><i class="bi bi-check-lg text-success"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>RF</td>
+                                        <td>.pkl</td>
+                                        <td>Random Forest (scikit-learn)</td>
+                                        <td><i class="bi bi-check-lg text-success"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>XGB</td>
+                                        <td>.pkl</td>
+                                        <td>XGBoost Regressor</td>
+                                        <td><i class="bi bi-check-lg text-success"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>DNN</td>
+                                        <td>.h5</td>
+                                        <td>Deep Neural Network (TensorFlow/Keras)</td>
+                                        <td><i class="bi bi-check-lg text-success"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <h4 class="mt-4">Model Switching</h4>
+                        <p>The FastAPI service automatically detects the active model based on the files present:</p>
+                        <ul>
+                            <li>The model file should be named <code>active_model.pkl</code> or <code>active_model.h5</code></li>
+                            <li>Model metadata is stored in <code>active_model_metadata.json</code></li>
+                            <li>Model switching is handled by the Django admin interface</li>
+                        </ul>
+                    </section>
+                    
+                    <!-- Deployment Section -->
+                    <section id="deployment" class="mb-5">
+                        <h2 class="fw-bold">Deployment</h2>
+                        <p>The FastAPI service is containerized with Docker for easy deployment:</p>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h4 class="mb-0">Docker Deployment</h4>
+                            </div>
+                            <div class="card-body">
+                                <pre><code># Build the FastAPI container
+docker build -t lendx-fastapi ./FastAPI
+
+# Run the FastAPI service
+docker run -d -p 8000:8000 --name lendx-fastapi-service lendx-fastapi</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h4 class="mb-0">Docker Compose</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>The service can be started alongside the Django application using docker-compose:</p>
+                                <pre><code>docker-compose up -d</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Production Note:</strong> For production deployments, ensure proper environment configuration and SSL termination.
+                        </div>
+                    </section>
+                    
+                    <!-- Security Section -->
+                    <section id="security" class="mb-5">
+                        <h2 class="fw-bold">Security</h2>
+                        <p>The FastAPI service implements several security measures:</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Authentication</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>JWT token-based authentication</li>
+                                            <li>Token validation on protected endpoints</li>
+                                            <li>Configurable token expiration</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0">Data Protection</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul>
+                                            <li>Input validation using Pydantic models</li>
+                                            <li>CORS configuration to restrict origins</li>
+                                            <li>Rate limiting on API endpoints</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Examples Section -->
+                    <section id="examples" class="mb-5">
+                        <h2 class="fw-bold">Code Examples</h2>
+                        
+                        <h4 class="mt-4">Python</h4>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <pre><code>import requests
+import json
+
+# Authentication (using the Django auth endpoint)
+auth_response = requests.post(
+    "http://localhost:8000/api/token/",
+    json={"email": "user@example.com", "password": "password"}
+)
+token = auth_response.json()["access"]
+
+# Use token for FastAPI prediction request
+headers = {
+    "Authorization": f"Bearer {token}",
+    "Content-Type": "application/json"
+}
+
+prediction_data = {
+    "age": 45,
+    "gender": "Female",
+    "injury_type": "Minor",
+    "treatment_duration": 60,
+    "employment_status": "Employed",
+    "income": 75000,
+    "dependents": 2,
+    "injury_severity": 3,
+    "permanent_disability": False,
+    "medical_expenses": 15000,
+    "property_damage": 5000
+}
+
+# Make prediction request to FastAPI service
+response = requests.post(
+    "http://localhost:8000/predict",
+    headers=headers,
+    json=prediction_data
+)
+
+# Print the result
+result = response.json()
+print(f"Predicted settlement value: ${result['settlement_value']}")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">JavaScript/Fetch</h4>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <pre><code>// First, get authentication token from Django
+async function getPrediction() {
+  // Get token from Django auth endpoint
+  const authResponse = await fetch('http://localhost:8000/api/token/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: 'user@example.com',
+      password: 'password'
+    })
+  });
+  
+  const authData = await authResponse.json();
+  const token = authData.access;
+  
+  // Prepare prediction data
+  const predictionData = {
+    age: 45,
+    gender: 'Female',
+    injury_type: 'Minor',
+    treatment_duration: 60,
+    employment_status: 'Employed',
+    income: 75000,
+    dependents: 2,
+    injury_severity: 3,
+    permanent_disability: false,
+    medical_expenses: 15000,
+    property_damage: 5000
+  };
+  
+  // Make prediction request to FastAPI service
+  const response = await fetch('http://localhost:8000/predict', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(predictionData)
+  });
+  
+  // Process result
+  const result = await response.json();
+  console.log(`Predicted settlement value: $${result.settlement_value}`);
+}
+
+getPrediction();</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Enable smooth scrolling for in-page navigation
+    document.querySelectorAll('.list-group-item').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                document.querySelector(href).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Highlight active sidebar item based on scroll position
+    window.addEventListener('scroll', function() {
+        const sections = document.querySelectorAll('section[id]');
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        document.querySelectorAll('.list-group-item').forEach(item => {
+            item.classList.remove('active');
+            const href = item.getAttribute('href');
+            if (href === '#' + current) {
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
+{% endblock %}
