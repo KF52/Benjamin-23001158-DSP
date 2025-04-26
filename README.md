@@ -31,11 +31,9 @@ The system bridges the gap between complex AI decision-making and human understa
 - Chart.js for data visualization
 
 **Backend:**
-- Python Django web framework
+- Python Django Frameowrk
 - FastAPI for ML microservice
 - PostgreSQL database
-- JWT authentication
-- Role-based access control
 
 **ML Models:**
 - CatBoost Classifier
