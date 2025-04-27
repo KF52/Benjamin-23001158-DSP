@@ -1,0 +1,202 @@
+echo {% extends 'base-template.html' %}
+
+{% block title %}LendX - Account Settings{% endblock %}
+
+{% block extra_head %}
+<style>
+    .settings-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .settings-nav {
+        border-radius: 10px 0 0 10px;
+        background-color: #f8f9fa;
+        height: 100%;
+        padding: 20px 0;
+    }
+    .settings-content {
+        padding: 25px;
+    }
+    .nav-pills .nav-link {
+        color: #495057;
+        border-radius: 0;
+        padding: 10px 20px;
+    }
+    .nav-pills .nav-link.active {
+        background-color: #e9ecef;
+        color: #0d6efd;
+        border-left: 3px solid #0d6efd;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .settings-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    .settings-section {
+        display: none;
+    }
+    .settings-section.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h2 class="fw-bold">Account Settings</h2>
+            <p class="text-muted">Manage your account information, password, and preferences</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card settings-nav">
+                <div class="nav flex-column nav-pills" id="settings-tab" role="tablist" aria-orientation="vertical">
+                    <button class="nav-link active" id="profile-tab" data-bs-toggle="pill" data-bs-target="#profile" type="button" role="tab">
+                        <i class="bi bi-person me-2"></i> Profile Information
+                    </button>
+                    <button class="nav-link" id="security-tab" data-bs-toggle="pill" data-bs-target="#security" type="button" role="tab">
+                        <i class="bi bi-shield-lock me-2"></i> Security
+                    </button>
+                    <button class="nav-link" id="preferences-tab" data-bs-toggle="pill" data-bs-target="#preferences" type="button" role="tab">
+                        <i class="bi bi-gear me-2"></i> Preferences
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card settings-card">
+                <div class="tab-content settings-content" id="settings-tabContent">
+                    <!-- Profile Information Section -->
+                    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <div class="settings-header">
+                            <h4>Profile Information</h4>
+                            <p class="text-muted mb-0">Update your personal information</p>
+                        </div>
+                        
+                        <form method="post" action="{% url 'account_settings' %}?section=profile">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update_profile">
+                            
+                            <div class="form-group">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-2"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Security Section -->
+                    <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
+                        <div class="settings-header">
+                            <h4>Security</h4>
+                            <p class="text-muted mb-0">Manage your password</p>
+                        </div>
+                        
+                        <form method="post" action="{% url 'account_settings' %}?section=security">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="change_password">
+                            
+                            <div class="form-group">
+                                <label for="current_password" class="form-label">Current Password</label>
+                                <input type="password" class="form-control" id="current_password" name="current_password" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="new_password" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="new_password" name="new_password" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-key me-2"></i> Change Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Preferences Section -->
+                    <div class="tab-pane fade" id="preferences" role="tabpanel" aria-labelledby="preferences-tab">
+                        <div class="settings-header">
+                            <h4>Preferences</h4>
+                            <p class="text-muted mb-0">Customize your experience</p>
+                        </div>
+                        
+                        <form method="post" action="{% url 'account_settings' %}?section=preferences">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update_preferences">
+                            
+                            <div class="form-group">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="email_notifications" name="email_notifications" {% if user.email_notifications %}checked{% endif %}>
+                                    <label class="form-check-label" for="email_notifications">
+                                        Email Notifications
+                                    </label>
+                                    <div class="text-muted small">Receive email updates about your predictions and account</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="time_zone" class="form-label">Time Zone</label>
+                                <select class="form-select" id="time_zone" name="time_zone">
+                                    <option value="UTC" {% if user.time_zone == 'UTC' %}selected{% endif %}>UTC</option>
+                                    <option value="America/New_York" {% if user.time_zone == 'America/New_York' %}selected{% endif %}>Eastern Time (ET)</option>
+                                    <option value="America/Chicago" {% if user.time_zone == 'America/Chicago' %}selected{% endif %}>Central Time (CT)</option>
+                                    <option value="America/Denver" {% if user.time_zone == 'America/Denver' %}selected{% endif %}>Mountain Time (MT)</option>
+                                    <option value="America/Los_Angeles" {% if user.time_zone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (PT)</option>
+                                    <option value="Europe/London" {% if user.time_zone == 'Europe/London' %}selected{% endif %}>London (GMT)</option>
+                                    <option value="Europe/Paris" {% if user.time_zone == 'Europe/Paris' %}selected{% endif %}>Paris (CET)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-2"></i> Save Preferences
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Maintain tab state after form submission or page refresh
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const section = urlParams.get('section');
+        
+        if (section) {
+            const tab = document.getElementById(section + '-tab');
+            if (tab) {
+                tab.click();
+            }
+        }
+    });
+</script>
+{% endblock %}

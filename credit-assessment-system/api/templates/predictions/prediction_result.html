@@ -1,0 +1,665 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}LendX - Prediction Result{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-primary">Prediction Results</h1>
+            <p class="lead">Based on the information provided, our machine learning model has generated the following prediction.</p>
+        </div>
+    </div>
+
+    {% if error_message %}
+    <div class="alert alert-danger">
+        <strong>Error:</strong> {{ error_message }}
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'prediction_form' %}" class="btn btn-primary btn-lg">Try Again</a>
+    </div>
+    {% else %}
+    
+    <!-- SECTION 1: PREDICTION -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Loan Approval Prediction</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-8 offset-md-2 text-center">
+                    <h2 class="display-4 {% if prediction.loan_approval %}text-success{% else %}text-danger{% endif %}">
+                        {% if prediction.loan_approval %}APPROVED{% else %}REJECTED{% endif %}
+                    </h2>
+                    <div class="mt-2 mb-4">
+                        <span class="badge rounded-pill {% if explanation.prediction_class == 1 %}bg-success{% else %}bg-danger{% endif %} p-2" style="font-size: 1.1rem;">
+                            Confidence: {{ explanation.human_explanation.confidence }}
+                        </span>
+                    </div>
+                    <p class="lead">This is your predicted loan decision based on the information provided.</p>
+                </div>
+            </div>
+    
+            <!-- Input Summary -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Submitted Financial Details</h5>
+            </div>
+            <div class="card-body">
+            
+            <div class="accordion" id="inputDataAccordion">
+                <!-- Personal Information -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="personalInfoHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#personalInfo" aria-expanded="false" aria-controls="personalInfo">
+                            Personal Information
+                        </button>
+                    </h2>
+                    <div id="personalInfo" class="accordion-collapse collapse" aria-labelledby="personalInfoHeading" data-bs-parent="#inputDataAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Age:</strong> {{ input_data.Age }} years</p>
+                                    <p><strong>Employment Status:</strong> {{ input_data.Employment_Status }}</p>
+                                    <p><strong>Experience:</strong> {{ input_data.Experience }} years</p>
+                                    <p><strong>Education Level:</strong> {{ input_data.Education_Level }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Marital Status:</strong> {{ input_data.Marital_Status }}</p>
+                                    <p><strong>Dependents:</strong> {{ input_data.Number_Of_Dependents }}</p>
+                                    <p><strong>Job Tenure:</strong> {{ input_data.Job_Tenure }} years</p>
+                                    <p><strong>Home Ownership:</strong> {{ input_data.Home_Ownership_Status }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Financial Information -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="financialInfoHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#financialInfo" aria-expanded="false" aria-controls="financialInfo">
+                            Financial Information
+                        </button>
+                    </h2>
+                    <div id="financialInfo" class="accordion-collapse collapse" aria-labelledby="financialInfoHeading" data-bs-parent="#inputDataAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="border-bottom pb-1 mb-2">Income & Debt</h6>
+                                    <p><strong>Annual Income:</strong> ${{ input_data.Annual_Income|floatformat:2 }}</p>
+                                    <p><strong>Monthly Income:</strong> ${{ input_data.Monthly_Income|floatformat:2 }}</p>
+                                    <p><strong>Monthly Debt Payments:</strong> ${{ input_data.Monthly_Debt_Payments|floatformat:2 }}</p>
+                                    <p><strong>Debt To Income Ratio:</strong> {{ input_data.Debt_To_Income_Ratio|floatformat:4 }}</p>
+                                    <p><strong>Total Debt To Income Ratio:</strong> {{ input_data.Total_Debt_To_Income_Ratio|floatformat:4 }}</p>
+                                    <p><strong>Credit Score:</strong> {{ input_data.Credit_Score }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="border-bottom pb-1 mb-2">Account Balances</h6>
+                                    <p><strong>Savings Account:</strong> ${{ input_data.Savings_Account_Balance|floatformat:2 }}</p>
+                                    <p><strong>Checking Account:</strong> ${{ input_data.Checking_Account_Balance|floatformat:2 }}</p>
+                                    <p><strong>Total Assets:</strong> ${{ input_data.Total_Assets|floatformat:2 }}</p>
+                                    <p><strong>Total Liabilities:</strong> ${{ input_data.Total_Liabilities|floatformat:2 }}</p>
+                                    <p><strong>Net Worth:</strong> ${{ input_data.Net_Worth|floatformat:2 }}</p>
+                                    <p><strong>Utility Bills Payment History:</strong> {{ input_data.Utility_Bills_Payment_History|floatformat:2 }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+   
+                <!-- Credit Information -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="creditInfoHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#creditInfo" aria-expanded="false" aria-controls="creditInfo">
+                            Credit Information
+                        </button>
+                    </h2>
+                    <div id="creditInfo" class="accordion-collapse collapse" aria-labelledby="creditInfoHeading" data-bs-parent="#inputDataAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Credit Card Utilization Rate:</strong> {{ input_data.Credit_Card_Utilization_Rate|floatformat:2 }}%</p>
+                                    <p><strong>Number Of Open Credit Lines:</strong> {{ input_data.Number_Of_Open_Credit_Lines }}</p>
+                                    <p><strong>Number Of Credit Inquiries:</strong> {{ input_data.Number_Of_Credit_Inquiries }}</p>
+                                    <p><strong>Payment History:</strong> {{ input_data.Payment_History|floatformat:1 }}%</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Length Of Credit History:</strong> {{ input_data.Length_Of_Credit_History }} years</p>
+                                    <p><strong>Bankruptcy History:</strong> {{ input_data.Bankruptcy_History }}</p>
+                                    <p><strong>Previous Loan Defaults:</strong> {{ input_data.Previous_Loan_Defaults }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loan Information -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="loanInfoHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#loanInfo" aria-expanded="false" aria-controls="loanInfo">
+                            Loan Information
+                        </button>
+                    </h2>
+                    <div id="loanInfo" class="accordion-collapse collapse" aria-labelledby="loanInfoHeading" data-bs-parent="#inputDataAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Loan Purpose:</strong> {{ input_data.Loan_Purpose }}</p>
+                                    <p><strong>Loan Amount:</strong> ${{ input_data.Loan_Amount|floatformat:2 }}</p>
+                                    <p><strong>Loan Duration:</strong> {{ input_data.Loan_Duration }} months</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            </div>
+        </div>
+
+    <!-- SECTION 2: PREDICTION EXPLANATION -->
+    {% if explanation %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Prediction Explanation - expand to see more</h3>
+            <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" 
+                data-bs-target="#explanationContent" aria-expanded="false" aria-controls="explanationContent">
+            <i class="bi bi-chevron-down"></i>
+        </button>
+        </div>
+        <div class="collapse" id="explanationContent">
+        <div class="card-body">
+            <!-- Explanation Text -->
+            <div class="mb-4">
+                <p class="text-muted">The prediction explanation generated using SHAP (SHapley Additive exPlanations) values, 
+                which show how each feature contributes to pushing the model output from the base value 
+                to the actual prediction.</p>
+            </div>
+            
+            <!-- HUMAN-READABLE EXPLANATION SECTION -->
+            {% if explanation and explanation.human_explanation %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Understanding Your Loan Decision</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-{% if explanation.prediction_class == 1 %}success{% else %}warning{% endif %} mb-4">
+                        <h4 class="alert-heading">Decision Summary</h4>
+                        <p class="mb-0">Your loan application was <strong>{% if explanation.prediction_class == 1 %}APPROVED{% else %}REJECTED{% endif %}</strong> with <strong>{{ explanation.human_explanation.confidence }}</strong> confidence.</p>
+                    </div>
+                    
+                    <!-- Explain the decision making process -->
+                    <div class="card mb-4 mt-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">How Our System Made This Decision</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+
+                                <!-- Step 1: Log-Odds Space -->
+                                <div class="col-md-12 mb-2">
+                                    <div class="card border-light">
+                                        <div class="card-body py-2">
+                                            <h6 class="card-title mb-1">Step 1: Log-Odds Space</h6>
+                                            <div class="my-1 text-center">
+                                                <p class="text-monospace mb-1">
+                                                    <span class="badge bg-secondary p-1 me-1">{{ explanation.base_value|floatformat:4 }}</span>
+                                                    <span class="me-1">+</span>
+                                                        <span class="badge {% if explanation.prediction_class == 1 %}bg-success{% else %}bg-danger{% endif %} p-1">
+                                                            {{ explanation.feature_impact|floatformat:4 }}
+                                                        </span>
+                                                    <span class="mx-1">=</span>
+                                                    <span class="badge bg-primary p-1">{{ explanation.log_odds|floatformat:4 }}</span>
+                                                </p>
+                                            </div>
+                                            <p class="small text-muted text-center mb-0" style="font-size: 0.8rem;">
+                                                [Base Value] + [Feature Contributions] = [Log-Odds]
+                                            </p>
+                                            <p class="small text-muted text-center mb-0" style="font-size: 0.8rem;">
+                                                The log-odds (also known as model's result) is computed from the sum of the base value and the feature contributions toward approval. 
+                                                <Strong>Base Value</Strong> is the starting point for the model’s prediction. It represents the average prediction before considering any information about your application.
+                                                <Strong>Feature Contributions</Strong> (also known as SHAP values) show how each of your application’s features  move the prediction higher or lower from the base value, leading to the final decision.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Probability Space -->
+                                <div class="col-md-12 mb-2">
+                                    <div class="card border-light">
+                                        <div class="card-body py-2">
+                                            <h6 class="card-title mb-1">Step 2: Probability Space</h6>
+                                            <div class="my-1 text-center">
+                                                <p class="mb-2">
+                                                    <span class="me-2" style="font-size: 1.1rem;">1/(1+e<sup>-{{ explanation.log_odds|floatformat:4 }}</sup>)</span>
+                                                    <span class="me-1">=</span>
+                                                    <span class="badge {% if explanation.prediction_class == 1 %}bg-success{% else %}bg-danger{% endif %} p-1" style="font-size: 1.1rem;">
+                                                        {{ explanation.probability|floatformat:4 }}  or  {{ explanation.probability_percentage }}%
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <p class="small text-muted text-center mb-0" style="font-size: 1rem;">
+                                                The computed log-odds is converted into <strong>Probability of Approval</strong> using sigmoid (logistic) function.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 3: Decision with Pie Chart -->
+                                <div class="col-md-12 mb-3">
+                                    <div class="card border-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Step 3: Binary Decision</h6>
+                                            <div class="text-center my-3">
+                                                <div style="max-width: 500px; height: 400px; margin: 0 auto;">
+                                                    <canvas id="decisionPieChart"></canvas>
+                                                </div>
+
+                                                <!-- Final prediction text -->
+                                                <p class="mb-0 mt-3">
+                                                    {% if explanation.prediction_class == 1 %}
+                                                        Our model predicts there is a <strong>{{ explanation.human_explanation.confidence }}</strong> chance that this loan should be <strong>APPROVED</strong>.
+                                                    {% else %}
+                                                        Our model predicts there is a <strong>{{ explanation.human_explanation.confidence }}</strong> chance that this loan should be <strong>REJECTED</strong>.
+                                                    {% endif %}
+                                                </p>
+                                                
+                                                <!-- Threshold comparison text -->
+                                                <p class="text-center mt-3">
+                                                    {% if explanation.prediction_class == 1 %}
+                                                        The approval probability <strong>{{ explanation.probability|floatformat:4 }}</strong> > 0.5 (classification decision threshold), therefore the loan is
+                                                        <span class="badge bg-success p-2" style="font-size: 1.2rem;">APPROVED (1)</span>
+                                                    {% else %}
+                                                        The approval probability <strong>{{ explanation.probability|floatformat:4 }}</strong> < 0.5 (classification decision threshold), therefore the loan is
+                                                        <span class="badge bg-danger p-2" style="font-size: 1.2rem;">REJECTED (0)</span>
+                                                    {% endif %}
+                                                </p>
+                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Understanding the feature contributions</h3>
+
+                    </div>
+                    <div class="mb-4">
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <p class = text-muted>
+                                Below are some top features that contributed to the model's decision. The sum of all the feature contributions is <strong>{{ explanation.feature_impact|floatformat:4 }}</strong> (in Step 1).
+                            </p>
+                         </div>
+                    </div>
+
+                    {% if explanation.prediction_class == 0 %}
+                    <div class="mb-4">
+                        <div class="mt-2 p-3 bg-light rounded">
+                            <h4 class="mb-3 text-primary">What does this mean?</h4>
+                            <p>Based on your application data, our model determined that some factors in your profile present a higher risk for loan approval. Here's what you can consider to improve your chances:</p>
+                            <ul class="mt-3">
+                                <li><strong>Address the key factors:</strong> Focus on improving the factors listed above under "Factors that increase your REJECTION likelihood".</li>
+                                <li><strong>Improve your credit score:</strong> Pay bills on time, reduce credit card balances, and avoid new credit applications.</li>
+                                <li><strong>Reduce debt-to-income ratio:</strong> Consider paying down existing debts or increasing your income.</li>
+                                <li><strong>Apply for a smaller loan amount:</strong> A lower requested amount may reduce the risk assessment.</li>
+                            </ul>
+                            <p class="mt-3">You can apply again after making these improvements, or speak with one of our loan officers who might be able to suggest alternative options better suited to your current situation.</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <!-- Positive Impacts Card -->
+                        <div class="col-md-6">
+                            <div class="card h-100 {% if explanation.prediction_class == 1 %}border-success{% else %}border-danger{% endif %}">
+                                <div class="card-header {% if explanation.prediction_class == 1 %}bg-success{% else %}bg-danger{% endif %} text-white">
+                                    <h5 class="mb-0"><i class="bi bi-arrow-up-circle"></i> 
+                                        {% if explanation.prediction_class == 1 %}
+                                            Factors that increase your APPROVAL likelihood
+                                        {% else %}
+                                            Factors that increase your REJECTION likelihood
+                                        {% endif %}
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if explanation.human_explanation.positive_factors %}
+                                        <ul class="list-group list-group-flush">
+                                            {% for factor in explanation.human_explanation.positive_factors %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>{{ factor.name }}</strong>
+                                                    <p class="mb-0 text-muted">
+                                                        {% if explanation.prediction_class == 1 %}
+                                                            Your {{ factor.name|lower }} positively influenced the approval.
+                                                        {% else %}
+                                                            Your {{ factor.name|lower }} positively influenced the rejection.
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                                <span class="badge {% if explanation.prediction_class == 1 %}bg-success{% else %}bg-danger{% endif %} rounded-pill">{{ factor.impact }}</span>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p class="text-muted">No significant positive factors identified.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Negative Impacts Card -->
+                        <div class="col-md-6">
+                            <div class="card h-100 {% if explanation.prediction_class == 1 %}border-danger{% else %}border-success{% endif %}">
+                                <div class="card-header {% if explanation.prediction_class == 1 %}bg-danger{% else %}bg-success{% endif %} text-white">
+                                    <h5 class="mb-0"><i class="bi bi-arrow-down-circle"></i> 
+                                        {% if explanation.prediction_class == 1 %}
+                                            Factors that increase your REJECTION likelihood
+                                        {% else %}
+                                            Factors that increase your APPROVAL likelihood
+                                        {% endif %}
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if explanation.human_explanation.negative_factors %}
+                                        <ul class="list-group list-group-flush">
+                                            {% for factor in explanation.human_explanation.negative_factors %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>{{ factor.name }}</strong>
+                                                    <p class="mb-0 text-muted">
+                                                        {% if explanation.prediction_class == 1 %}
+                                                            Your {{ factor.name|lower }} negatively influenced the approval.
+                                                        {% else %}
+                                                            Your {{ factor.name|lower }} negatively influenced the rejection.
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                                <span class="badge {% if explanation.prediction_class == 1 %}bg-danger{% else %}bg-success{% endif %} rounded-pill">{{ factor.impact }}</span>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p class="text-muted">No significant negative factors identified.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            {% endif %}
+            
+            <!-- Force Plot -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Force Plot</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-2">
+                        <p class="text-muted">This visualization shows how each feature pushes the prediction from the base value (average model output) to the final prediction.</p>
+                    </div>
+                    <div class="text-center mb-4">
+                        <img src="data:image/png;base64,{{ explanation.force_plot }}" 
+                            alt="Force plot showing feature contributions" 
+                            class="img-fluid"
+                            style="max-height: 400px; width: auto;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waterfall Plot -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Waterfall Plot</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-2">
+                        <p class="text-muted">This plot shows how each feature of your application contributed to the final decision.
+                            Positive bars increase the likelihood of approval, while negative bars decrease it.</p>
+                    </div>
+                    <!-- Waterfall Plot showing how each feature contributed -->
+                    <div class="text-center mb-4">
+                        <img src="data:image/png;base64,{{ explanation.waterfall_plot }}" 
+                            alt="Feature contribution to prediction" 
+                            class="img-fluid">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Feature Importance Plot -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Summary Plot - Feature Importance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="text-center mb-2">
+                            <p class="text-muted">This plot shows which features have the biggest impact on the model’s predictions. 
+                                The features at the top are the most important, meaning they influence the model’s decisions the most.</p>
+                        </div>
+                        <img src="data:image/png;base64,{{ explanation.summary_plot_featureimportance }}" 
+                            alt="Feature importance" 
+                            class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Top Influencing Factors - MOVED DOWN -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Top Influencing Factors</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Factor</th>
+                                    <th>Importance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for feature in explanation.top_features %}
+                                <tr>
+                                    <td>{{ feature.name }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-primary" 
+                                                style="width: {{ feature.importance|floatformat:0 }}%" 
+                                                role="progressbar">
+                                                {{ feature.importance|floatformat:0 }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% endif %}
+</div>   
+
+    <!-- SECTION 3: PREDICTION FEEDBACK -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Prediction Feedback</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'submit_prediction_feedback' %}" id="feedbackForm">
+                {% csrf_token %}
+                <input type="hidden" name="prediction_id" value="{{ prediction_id }}">
+                
+                <div class="mb-4">
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h4 class="mb-3">Is this result satisfactory?</h4>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="is_satisfactory" id="satisfactoryYes" value="yes" checked>
+                            <label class="form-check-label" for="satisfactoryYes">
+                                Yes, I am satisfied with the result.
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="is_satisfactory" id="satisfactoryNo" value="no">
+                            <label class="form-check-label" for="satisfactoryNo">
+                                No, I am not satisfied with the result. 
+                            </label>
+                        </div>
+                        
+                        <div id="feedbackFields" class="mt-3" style="display: none;">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <textarea class="form-control" id="applicantComments" name="applicant_comments" rows="3" placeholder="Please explain why you think this result is unsatisfactory or please provide any justifications"></textarea>
+                                </div>
+                            </div>
+                            <div class="alert alert-warning mt-3">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                Note: This case will be flagged for review. Our bank officers will look into your dispute and get back to you as soon as possible.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4 pt-2">
+                    <a href="{% url 'prediction_form' %}" class="btn btn-secondary">Make Another Application</a>
+                    <button type="submit" class="btn btn-success">Confirm Application</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+<!-- Replace the entire script section at the bottom with this fixed version -->
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Code for feedback form
+        const satisfactoryYes = document.getElementById('satisfactoryYes');
+        const satisfactoryNo = document.getElementById('satisfactoryNo');
+        const feedbackFields = document.getElementById('feedbackFields');
+        
+        function togglefeedbackFields() {
+            if (satisfactoryNo.checked) {
+                feedbackFields.style.display = 'block';
+                document.getElementById('applicantComments').setAttribute('required', '');
+            } else {
+                feedbackFields.style.display = 'none';
+                document.getElementById('applicantComments').removeAttribute('required');
+            }
+        }
+        
+        satisfactoryYes.addEventListener('change', togglefeedbackFields);
+        satisfactoryNo.addEventListener('change', togglefeedbackFields);
+        
+        // Initial check
+        togglefeedbackFields();
+
+        // Decision Pie Chart with proper class handling
+        
+        // For class 1, probability represents approval chance directly
+        // For class 0, we need to adjust presentation (raw_probability is still approval chance)
+        const approvalPercentage = parseFloat("{{ explanation.probability_percentage }}");
+        const rejectionPercentage = (100 - parseFloat(approvalPercentage)).toFixed(2);        
+        const chartTitle = 'Approval Probability: ' + approvalPercentage + '%' + '  |  ' + 'Rejection Probability: ' + rejectionPercentage + '%';
+        {% if explanation.prediction_class == 1 %}
+            const firstSegmentLabel = 'APPROVED';
+            const secondSegmentLabel = 'REJECTED';
+        {% else %}
+            const firstSegmentLabel = 'REJECTED';
+            const secondSegmentLabel = 'APPROVED';
+        {% endif %}
+        
+        const ctx = document.getElementById('decisionPieChart').getContext('2d');
+        
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: [
+                    firstSegmentLabel, 
+                    secondSegmentLabel
+                ],
+                datasets: [{
+                    data: [
+                        {% if explanation.prediction_class == 1 %}
+                            approvalPercentage,
+                            rejectionPercentage
+                        {% else %}
+                            rejectionPercentage, 
+                            approvalPercentage
+                        {% endif %}
+                    ],
+                    backgroundColor: [
+                        {% if explanation.prediction_class == 1 %}
+                            'rgba(25, 135, 84, 0.9)',  // Success green for approval
+                            'rgba(220, 53, 69, 0.9)'   // Danger red for rejection
+                        {% else %}
+                            'rgba(220, 53, 69, 0.9)',   // Danger red for rejection
+                            'rgba(25, 135, 84, 0.9)'    // Success green for approval
+                        {% endif %}
+                    ],
+                    borderColor: [
+                        {% if explanation.prediction_class == 1 %}
+                            'rgba(25, 135, 84, 1)',     // Green border for approval
+                            'rgba(220, 53, 69, 1)'      // Red border for rejection
+                        {% else %}
+                            'rgba(220, 53, 69, 1)',     // Red border for rejection
+                            'rgba(25, 135, 84, 1)'      // Green border for approval
+                        {% endif %}
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14
+                            },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.formattedValue || '';
+                                return `${label}: ${value}%`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: chartTitle,
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

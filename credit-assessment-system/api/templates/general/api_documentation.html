@@ -1,0 +1,489 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}LendX - API Documentation{% endblock %}
+
+{% block content %}
+<div class="api-documentation-container">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group sticky-top" style="top: 20px;">
+                <a href="#introduction" class="list-group-item list-group-item-action">Introduction</a>
+                <a href="#authentication" class="list-group-item list-group-item-action">Authentication</a>
+                <a href="#predictions" class="list-group-item list-group-item-action">Prediction API</a>
+                <a href="#models" class="list-group-item list-group-item-action">Model Management API</a>
+                <a href="#examples" class="list-group-item list-group-item-action">Code Examples</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card shadow-sm mb-5">
+                <div class="card-body">
+                    <h1 class="display-5 fw-bold mb-4">LendX API Documentation</h1>
+                    <p class="lead">Complete reference for integrating with the LendX Credit Scoring System</p>
+                    <hr>
+                    
+                    <!-- Introduction Section -->
+                    <section id="introduction" class="mb-5">
+                        <h2 class="fw-bold">Introduction</h2>
+                        <p>The LendX API allows you to programmatically access our credit scoring and loan approval prediction service. This documentation provides information on available endpoints, request/response formats, and authentication requirements.</p>
+                        
+                        <div class="alert alert-info mt-3">
+                            <strong>Base URL:</strong> <code>https://api.lendx.com/v1</code> (Production)<br>
+                            <strong>Sandbox URL:</strong> <code>https://sandbox-api.lendx.com/v1</code> (Testing)
+                        </div>
+                        
+                        <p>All API requests must be made over HTTPS. Calls made over plain HTTP will fail.</p>
+                    </section>
+                    
+                    <!-- Authentication Section -->
+                    <section id="authentication" class="mb-5">
+                        <h2 class="fw-bold">Authentication</h2>
+                        <p>The LendX API uses JSON Web Tokens (JWT) for authentication. To authenticate your requests, you need to include the JWT token in the Authorization header:</p>
+                        
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <code>Authorization: Bearer &lt;your_token&gt;</code>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Obtaining a Token</h4>
+                        <p>To obtain a JWT token, make a POST request to the authentication endpoint:</p>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>POST</strong> <code>/auth/token/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Request body:</strong></p>
+                                <pre><code>{
+  "email": "your-email@example.com",
+  "password": "your-password"
+}</code></pre>
+
+                                <p class="mt-3"><strong>Response:</strong></p>
+                                <pre><code>{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Token Refresh</h4>
+                        <p>Access tokens expire after 1 hour. To get a new access token using your refresh token:</p>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>POST</strong> <code>/auth/token/refresh/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Request body:</strong></p>
+                                <pre><code>{
+  "refresh": "your-refresh-token"
+}</code></pre>
+
+                                <p class="mt-3"><strong>Response:</strong></p>
+                                <pre><code>{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Predictions API Section -->
+                    <section id="predictions" class="mb-5">
+                        <h2 class="fw-bold">Prediction API</h2>
+                        <p>Use the prediction endpoints to generate loan approval predictions based on applicant data.</p>
+                        
+                        <h4 class="mt-4">Create a Prediction</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>POST</strong> <code>/predict</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Request body:</strong></p>
+                                <pre><code>{
+  "Age": 37,
+  "Annual_Income": 100761.0,
+  "Credit_Score": 604,
+  "Monthly_Income": 8396.75,
+  "Monthly_Debt_Payments": 2519.03,
+  "Debt_To_Income_Ratio": 0.3,
+  "Total_Debt_To_Income_Ratio": 0.42,
+  "Employment_Status": "Full-time",
+  "Experience": 12,
+  "Education_Level": "Bachelor's",
+  "Marital_Status": "Married",
+  "Number_Of_Dependents": 2,
+  "Job_Tenure": 7,
+  "Home_Ownership_Status": "Mortgage",
+  "Savings_Account_Balance": 15000.0,
+  "Checking_Account_Balance": 3500.0,
+  "Total_Assets": 225000.0,
+  "Total_Liabilities": 180000.0,
+  "Net_Worth": 45000.0,
+  "Credit_Card_Utilization_Rate": 30.0,
+  "Number_Of_Open_Credit_Lines": 6,
+  "Number_Of_Credit_Inquiries": 2,
+  "Payment_History": 95.0,
+  "Length_Of_Credit_History": 15,
+  "Bankruptcy_History": false,
+  "Previous_Loan_Defaults": 0,
+  "Loan_Purpose": "Home",
+  "Loan_Amount": 25000.0,
+  "Loan_Duration": 36,
+  "Base_Interest_Rate": 0.075,
+  "Interest_Rate": 0.085,
+  "Monthly_Loan_Payment": 787.5,
+  "Utility_Bills_Payment_History": 98.0
+}</code></pre>
+
+                                <p class="mt-3"><strong>Response:</strong></p>
+                                <pre><code>{
+  "id": "pred_123456789",
+  "timestamp": "2025-04-15T10:30:45Z",
+  "input_data": { ... },
+  "loan_approval": true,
+  "confidence_score": 0.87,
+  "explanation": {
+    "feature_importance_plot": "base64_encoded_image_data",
+    "waterfall_plot": "base64_encoded_image_data",
+    "top_features": [
+      {"name": "Credit_Score", "importance": 35.2},
+      {"name": "Debt_To_Income_Ratio", "importance": 28.7},
+      {"name": "Annual_Income", "importance": 15.4}
+    ],
+    "human_explanation": {
+      "decision": "Approved",
+      "confidence": "87%",
+      "certainty_level": "high",
+      "positive_factors": ["Good credit score", "Stable income"],
+      "negative_factors": ["High debt-to-income ratio"]
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">List Predictions</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>GET</strong> <code>/predictions/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Query parameters:</strong></p>
+                                <ul>
+                                    <li><code>page</code>: Page number (default: 1)</li>
+                                    <li><code>limit</code>: Results per page (default: 20, max: 100)</li>
+                                    <li><code>start_date</code>: Filter by start date (ISO format)</li>
+                                    <li><code>end_date</code>: Filter by end date (ISO format)</li>
+                                </ul>
+
+                                <p class="mt-3"><strong>Response:</strong></p>
+                                <pre><code>{
+  "count": 42,
+  "next": "/api/predictions/?page=2",
+  "previous": null,
+  "results": [
+    {
+      "id": "pred_123456789",
+      "timestamp": "2025-04-15T10:30:45Z",
+      "loan_approval": true,
+      "confidence_score": 0.87
+    },
+    ...
+  ]
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Get Prediction Details</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>GET</strong> <code>/predictions/{prediction_id}/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Response:</strong></p>
+                                <pre><code>{
+  "id": "pred_123456789",
+  "timestamp": "2025-04-15T10:30:45Z",
+  "input_data": { ... },
+  "loan_approval": true,
+  "confidence_score": 0.87,
+  "is_satisfactory": true,
+  "feedback_date": "2025-04-16T09:15:22Z",
+  "modified_by_staff": false,
+  "staff_comments": null
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Submit Feedback</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>POST</strong> <code>/predictions/{prediction_id}/feedback/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Request body:</strong></p>
+                                <pre><code>{
+  "is_satisfactory": false,
+  "applicant_comments": "I believe my credit score should be higher"
+}</code></pre>
+
+                                <p class="mt-3"><strong>Response:</strong></p>
+                                <pre><code>{
+  "success": true,
+  "message": "Feedback submitted successfully"
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Models API Section -->
+                    <section id="models" class="mb-5">
+                        <h2 class="fw-bold">Model Management API</h2>
+                        <p>API endpoints for managing machine learning models (AI Engineers only).</p>
+                        
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            These endpoints require <strong>AI Engineer</strong> or <strong>Admin</strong> role permissions.
+                        </div>
+                        
+                        <h4 class="mt-4">List Models</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>GET</strong> <code>/models/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Response:</strong></p>
+                                <pre><code>{
+  "count": 4,
+  "results": [
+    {
+      "id": "model_123456",
+      "name": "RandomForest v2",
+      "model_type": "RandomForestClassifier",
+      "is_active": true,
+      "requires_scaling": true,
+      "uploaded_at": "2025-03-15T14:22:10Z"
+    },
+    ...
+  ]
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Upload Model</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>POST</strong> <code>/models/</code> (multipart/form-data)
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Form data:</strong></p>
+                                <ul>
+                                    <li><code>model_file</code>: The .pkl or .h5 model file</li>
+                                    <li><code>name</code>: Model name</li>
+                                    <li><code>model_type</code>: Type (RandomForestClassifier, XGBClassifier, etc.)</li>
+                                    <li><code>description</code>: Optional description</li>
+                                    <li><code>set_active</code>: Boolean (true/false)</li>
+                                    <li><code>requires_scaling</code>: Boolean (true/false)</li>
+                                </ul>
+
+                                <p class="mt-3"><strong>Response:</strong></p>
+                                <pre><code>{
+  "id": "model_789012",
+  "name": "XGBoost v3",
+  "model_type": "XGBClassifier",
+  "is_active": true,
+  "requires_scaling": true,
+  "uploaded_at": "2025-04-15T11:30:45Z"
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Set Model as Active</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>POST</strong> <code>/models/{model_id}/activate/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Response:</strong></p>
+                                <pre><code>{
+  "success": true,
+  "message": "Model is now active for all predictions"
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Delete Model</h4>
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <strong>DELETE</strong> <code>/models/{model_id}/</code>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Response:</strong></p>
+                                <pre><code>{
+  "success": true,
+  "message": "Model deleted successfully"
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Examples Section -->
+                    <section id="examples" class="mb-5">
+                        <h2 class="fw-bold">Code Examples</h2>
+                        
+                        <h4 class="mt-4">Python</h4>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <pre><code>import requests
+import json
+
+API_URL = "https://api.lendx.com/v1"
+EMAIL = "your-email@example.com"
+PASSWORD = "your-password"
+
+# Authenticate and get token
+auth_response = requests.post(
+    f"{API_URL}/auth/token/",
+    json={"email": EMAIL, "password": PASSWORD}
+)
+token = auth_response.json()["access"]
+
+# Use token for prediction request
+headers = {
+    "Authorization": f"Bearer {token}",
+    "Content-Type": "application/json"
+}
+
+loan_data = {
+  "Age": 37,
+  "Annual_Income": 100761.0,
+  "Credit_Score": 604,
+  "Monthly_Income": 8396.75,
+  "Monthly_Debt_Payments": 2519.03,
+  "Debt_To_Income_Ratio": 0.3,
+  "Total_Debt_To_Income_Ratio": 0.42,
+  "Employment_Status": "Full-time",
+  "Loan_Amount": 25000.0,
+  "Loan_Duration": 36
+  # Include other required fields...
+}
+
+# Make prediction
+prediction_response = requests.post(
+    f"{API_URL}/predict",
+    headers=headers,
+    json=loan_data
+)
+
+result = prediction_response.json()
+approved = "APPROVED" if result['loan_approval'] else "REJECTED"
+print(f"Loan Status: {approved} (Confidence: {result['confidence_score']*100:.1f}%)")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">JavaScript</h4>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <pre><code>const API_URL = 'https://api.lendx.com/v1';
+const EMAIL = 'your-email@example.com';
+const PASSWORD = 'your-password';
+
+// Authenticate and get token
+async function getLoanPrediction() {
+  // Get token
+  const authResponse = await fetch(`${API_URL}/auth/token/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      email: EMAIL,
+      password: PASSWORD
+    })
+  });
+  
+  const authData = await authResponse.json();
+  const token = authData.access;
+  
+  // Make prediction
+  const loanData = {
+    Age: 37,
+    Annual_Income: 100761.0,
+    Credit_Score: 604,
+    Monthly_Income: 8396.75,
+    Monthly_Debt_Payments: 2519.03,
+    Debt_To_Income_Ratio: 0.3,
+    Employment_Status: "Full-time",
+    Loan_Amount: 25000.0,
+    Loan_Duration: 36
+    // Include other required fields...
+  };
+  
+  const predResponse = await fetch(`${API_URL}/predict`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(loanData)
+  });
+  
+  const result = await predResponse.json();
+  const status = result.loan_approval ? "APPROVED" : "REJECTED";
+  console.log(`Loan Status: ${status} (Confidence: ${(result.confidence_score*100).toFixed(1)}%)`);
+}
+
+getLoanPrediction();</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Enable smooth scrolling for in-page navigation
+    document.querySelectorAll('.list-group-item').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href.startsWith('#')) {
+                e.preventDefault();
+                document.querySelector(href).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // Highlight active sidebar item based on scroll position
+    window.addEventListener('scroll', function() {
+        const sections = document.querySelectorAll('section[id]');
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        document.querySelectorAll('.list-group-item').forEach(item => {
+            item.classList.remove('active');
+            const href = item.getAttribute('href');
+            if (href === '#' + current) {
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
+{% endblock %}

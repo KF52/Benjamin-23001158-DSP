@@ -1,0 +1,53 @@
+/* Dashboard styles */
+/* Add to your existing dashboard.css */
+
+/* Role-specific styling */
+.admin-dashboard .dashboard-card {
+    border-left: 4px solid #dc3545; /* Red for admin */
+}
+
+.finance-dashboard .dashboard-card {
+    border-left: 4px solid #198754; /* Green for finance */
+}
+
+.ai-dashboard .dashboard-card {
+    border-left: 4px solid #0d6efd; /* Blue for AI engineer */
+}
+
+.user-dashboard .dashboard-card {
+    border-left: 4px solid #6c757d; /* Gray for regular users */
+}
+
+/* Role badges */
+.role-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    margin-left: 10px;
+}
+
+.role-badge-admin {
+    background-color: #dc3545;
+    color: white;
+}
+
+.role-badge-finance {
+    background-color: #198754;
+    color: white;
+}
+
+.role-badge-ai {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.role-badge-user {
+    background-color: #6c757d;
+    color: white;
+}

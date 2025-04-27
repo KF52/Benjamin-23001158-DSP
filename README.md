@@ -45,8 +45,8 @@ The system bridges the gap between complex AI decision-making and human understa
 
 ```bash
 # Clone the repository
-git clone # <project repository link>
-cd loan-credit-assessment-system
+git clone # < "gitbub repository link" >
+cd credit-assessment-system
 
 # Build and start all services using Docker Compose
 docker-compose build

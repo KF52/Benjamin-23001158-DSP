@@ -1,0 +1,498 @@
+{% extends "base-template.html" %}
+{% load static %}
+
+{% block title %}LendX - Loan Approval Prediction{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-primary">Loan Application Form</h1>
+            <p class="lead">Please fill in your personal and financial details in the form below to check if your loan would be approved :</p>
+        </div>
+    </div>
+
+    {% if not ml_service_available %}
+    <div class="alert alert-warning">
+        <strong>Warning:</strong> The prediction service is currently unavailable. Please try again later.
+    </div>
+    {% endif %}
+
+    {% if error_message %}
+    <div class="alert alert-danger">
+        <strong>Error:</strong> {{ error_message }}
+    </div>
+    {% endif %}
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post" id="predictionForm">
+                {% csrf_token %}
+                
+                <!-- Personal Information -->
+                <div class="section-header bg-light p-2 mb-3">
+                    <h4 class="m-0">Personal Information</h4>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Age">Age:</label>
+                            <input type="number" class="form-control" id="Age" name="Age" min="18" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Employment_Status">Employment Status:</label>
+                            <select class="form-select" id="Employment_Status" name="Employment_Status" required>
+                                <option value="Employed">Employed</option>
+                                <option value="Self-Employed">Self-Employed</option>
+                                <option value="Unemployed">Unemployed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Experience">Experience (years):</label>
+                            <input type="number" class="form-control" id="Experience" name="Experience" min="0" step="0.5" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Education_Level">Education Level:</label>
+                            <select class="form-select" id="Education_Level" name="Education_Level" required>
+                                <option value="High School">High School</option>
+                                <option value="Associate">Associate</option>
+                                <option value="Bachelor">Bachelor</option>
+                                <option value="Master">Master</option>
+                                <option value="Doctorate">Doctorate</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Marital_Status">Marital Status:</label>
+                            <select class="form-select" id="Marital_Status" name="Marital_Status" required>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Number_Of_Dependents">Number Of Dependents:</label>
+                            <input type="number" class="form-control" id="Number_Of_Dependents" name="Number_Of_Dependents" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Job_Tenure">Job Tenure (years):</label>
+                            <input type="number" class="form-control" id="Job_Tenure" name="Job_Tenure" min="0" step="0.5" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Home_Ownership_Status">Home Ownership Status:</label>
+                            <select class="form-select" id="Home_Ownership_Status" name="Home_Ownership_Status" required>
+                                <option value="Own">Own</option>
+                                <option value="Mortgage">Mortgage</option>
+                                <option value="Rent">Rent</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Information -->
+                <div class="section-header bg-light p-2 mb-3">
+                    <h4 class="m-0">Financial Information</h4>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Annual_Income">Annual Income ($):</label>
+                            <input type="number" class="form-control" id="Annual_Income" name="Annual_Income" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Monthly_Income">Monthly Income ($):</label>
+                            <input type="number" class="form-control" id="Monthly_Income" name="Monthly_Income" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Monthly_Debt_Payments">Monthly Debt Payments ($):</label>
+                            <input type="number" class="form-control" id="Monthly_Debt_Payments" name="Monthly_Debt_Payments" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Savings_Account_Balance">Savings Account Balance ($):</label>
+                            <input type="number" class="form-control" id="Savings_Account_Balance" name="Savings_Account_Balance" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Checking_Account_Balance">Checking Account Balance ($):</label>
+                            <input type="number" class="form-control" id="Checking_Account_Balance" name="Checking_Account_Balance" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Utility_Bills_Payment_History">Utility Bills Payment History (%):</label>
+                            <input type="number" class="form-control" id="Utility_Bills_Payment_History" name="Utility_Bills_Payment_History" min="0" max="100" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Total_Assets">Total Assets ($):</label>
+                            <input type="number" class="form-control" id="Total_Assets" name="Total_Assets" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Total_Liabilities">Total Liabilities ($):</label>
+                            <input type="number" class="form-control" id="Total_Liabilities" name="Total_Liabilities" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Net_Worth">Net Worth ($):</label>
+                            <input type="number" class="form-control" id="Net_Worth" name="Net_Worth" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Credit_Score">Credit Score:</label>
+                            <input type="number" class="form-control" id="Credit_Score" name="Credit_Score" required>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!-- Credit Information -->
+                <div class="section-header bg-light p-2 mb-3">
+                    <h4 class="m-0">Credit Information</h4>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Credit_Card_Utilization_Rate">Credit Card Utilization Rate (%):</label>
+                            <input type="number" class="form-control" id="Credit_Card_Utilization_Rate" name="Credit_Card_Utilization_Rate" min="0" max="100" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Number_Of_Open_Credit_Lines">Number Of Open Credit Lines:</label>
+                            <input type="number" class="form-control" id="Number_Of_Open_Credit_Lines" name="Number_Of_Open_Credit_Lines" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Number_Of_Credit_Inquiries">Number Of Credit Inquiries:</label>
+                            <input type="number" class="form-control" id="Number_Of_Credit_Inquiries" name="Number_Of_Credit_Inquiries" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Debt_To_Income_Ratio">Debt To Income Ratio:</label>
+                            <input type="number" class="form-control" id="Debt_To_Income_Ratio" name="Debt_To_Income_Ratio" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Total_Debt_To_Income_Ratio">Total Debt To Income Ratio:</label>
+                            <input type="number" class="form-control" id="Total_Debt_To_Income_Ratio" name="Total_Debt_To_Income_Ratio" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Payment_History">Payment History (%):</label>
+                            <input type="number" class="form-control" id="Payment_History" name="Payment_History" min="0" max="100" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Length_Of_Credit_History">Length Of Credit History (years):</label>
+                            <input type="number" class="form-control" id="Length_Of_Credit_History" name="Length_Of_Credit_History" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Bankruptcy_History">Bankruptcy History:</label>
+                            <select class="form-select" id="Bankruptcy_History" name="Bankruptcy_History" required>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Previous_Loan_Defaults">Previous Loan Defaults:</label>
+                            <select class="form-select" id="Previous_Loan_Defaults" name="Previous_Loan_Defaults" required>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loan Information -->
+                <div class="section-header bg-light p-2 mb-3">
+                    <h4 class="m-0">Loan Information</h4>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Loan_Purpose">Loan Purpose:</label>
+                            <select class="form-select" id="Loan_Purpose" name="Loan_Purpose" required>
+                                <option value="Home">Home</option>
+                                <option value="Debt Consolidation">Debt Consolidation</option>
+                                <option value="Education">Education</option>
+                                <option value="Auto">Auto</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Loan_Amount">Loan Amount ($):</label>
+                            <input type="number" class="form-control" id="Loan_Amount" name="Loan_Amount" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Loan_Duration">Loan Duration (months):</label>
+                            <input type="number" class="form-control" id="Loan_Duration" name="Loan_Duration" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="submit" id="prediction-button" class="btn btn-primary btn-lg" {% if not ml_service_available %}disabled{% endif %}>
+                        <span id="button-default">
+                            Check Loan Status
+                        </span>
+                        <span id="button-loading" style="display: none;">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Assessing...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Default form values embedded directly in the page
+    const defaultValues = {
+        "Age": 35,
+        "Employment_Status": "Employed",
+        "Experience": 11,
+        "Education_Level": "High School",
+        "Marital_Status": "Married",
+        "Number_Of_Dependents": 2,
+        "Job_Tenure": 7,
+        "Home_Ownership_Status": "Mortgage",
+        "Annual_Income": 189154,
+        "Monthly_Income": 15762.83,
+        "Monthly_Debt_Payments": 411,
+        "Savings_Account_Balance": 4456,
+        "Checking_Account_Balance": 3706,
+        "Utility_Bills_Payment_History": 0.831507,
+        "Total_Assets": 42599,
+        "Total_Liabilities": 20156,
+        "Net_Worth": 22443,
+        "Credit_Score": 509,
+        "Credit_Card_Utilization_Rate": 0.289522,
+        "Number_Of_Open_Credit_Lines": 2,
+        "Number_Of_Credit_Inquiries": 4,
+        "Debt_To_Income_Ratio": 0.148908,
+        "Total_Debt_To_Income_Ratio": 0.047832,
+        "Payment_History": 30,
+        "Length_Of_Credit_History": 12,
+        "Bankruptcy_History": "No",
+        "Previous_Loan_Defaults": "No",
+        "Loan_Purpose": "Debt Consolidation",
+        "Loan_Amount": 11222,
+        "Loan_Duration": 60
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Define percentage fields that need conversion
+        const percentageFields = [
+            'Credit_Card_Utilization_Rate',
+            'Debt_To_Income_Ratio',
+            'Total_Debt_To_Income_Ratio',
+            'Payment_History',
+            'Utility_Bills_Payment_History',
+            'Base_Interest_Rate',
+            'Interest_Rate'
+        ];
+        
+        // Populate form with default values
+        for (const [field, value] of Object.entries(defaultValues)) {
+            const input = document.getElementById(field);
+            if (input) {
+                if (input.tagName === 'SELECT') {
+                    // For select elements, find and select the option with matching value
+                    const option = Array.from(input.options).find(opt => opt.value === value);
+                    if (option) option.selected = true;
+                } else {
+                    // For input elements
+                    if (percentageFields.includes(field) && value <= 1) {
+                        // Convert decimal to percentage for display
+                        input.value = (value * 100).toFixed(4);
+                    } else {
+                        input.value = value;
+                    }
+                }
+            }
+        }
+        
+        // Form validation code
+        const forms = document.querySelectorAll('.needs-validation');
+        const predictionForm = document.getElementById('predictionForm');
+        const buttonDefault = document.getElementById('button-default');
+        const buttonLoading = document.getElementById('button-loading');
+        const submitButton = document.getElementById('prediction-button');
+
+        // Define monetary fields that need flexible step values
+        const monetaryFields = [
+            'Annual_Income',
+            'Monthly_Income',
+            'Monthly_Debt_Payments',
+            'Savings_Account_Balance',
+            'Checking_Account_Balance', 
+            'Total_Assets',
+            'Total_Liabilities',
+            'Net_Worth',
+            'Loan_Amount',
+            'Monthly_Loan_Payment',
+            'Credit_Card_Utilization_Rate',
+            'Debt_To_Income_Ratio',
+            'Total_Debt_To_Income_Ratio',
+            'Payment_History',
+            'Utility_Bills_Payment_History',
+            'Base_Interest_Rate',
+            'Interest_Rate'
+        ];
+        
+        // Remove step restrictions on monetary fields
+        monetaryFields.forEach(function(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                // Set step to "any" to accept any numeric value
+                field.setAttribute('step', 'any');
+            }
+        });
+        
+        // Function to round number to 4 decimal places
+        function roundToFour(num) {
+            return parseFloat(parseFloat(num).toFixed(4));
+        }
+        
+        // Get all numeric input fields
+        const numericInputs = document.querySelectorAll('input[type="number"]');
+        
+        // Add blur event listener to each numeric input for real-time rounding
+        numericInputs.forEach(function(input) {
+            // Skip fields that should be integers
+            const skipRounding = ['Age', 'Number_Of_Dependents', 'Number_Of_Open_Credit_Lines', 
+                                'Number_Of_Credit_Inquiries', 'Loan_Duration'];
+            
+            if (!skipRounding.includes(input.id)) {
+                input.addEventListener('blur', function() {
+                    if (this.value !== '' && !isNaN(this.value)) {
+                        this.value = roundToFour(this.value);
+                        
+                        // For percentage fields, validate the range
+                        if (percentageFields.includes(this.id)) {
+                            let value = parseFloat(this.value);
+                            if (value > 100) {
+                                alert("Percentage value cannot exceed 100%");
+                                this.value = "100";
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Handle form submission and validation
+        predictionForm.addEventListener('submit', function(event) {
+            if (predictionForm.checkValidity()) {
+                // Convert percentage values back to decimals for submission
+                percentageFields.forEach(function(fieldId) {
+                    const field = document.getElementById(fieldId);
+                    if (field && field.value !== '') {
+                        // Convert percentage to decimal for the model
+                        field.value = (parseFloat(field.value) / 100).toFixed(6);
+                    }
+                });
+                
+                // Round all decimal values before submission
+                numericInputs.forEach(function(input) {
+                    // Skip fields that should be integers
+                    const skipRounding = ['Age', 'Number_Of_Dependents', 'Number_Of_Open_Credit_Lines', 
+                                        'Number_Of_Credit_Inquiries', 'Loan_Duration'];
+                    
+                    if (!skipRounding.includes(input.id) && input.value !== '' && !isNaN(input.value)) {
+                        input.value = roundToFour(input.value);
+                    }
+                });
+                
+                // Form is valid, show loading state
+                buttonDefault.style.display = 'none';
+                buttonLoading.style.display = 'inline-block';
+                submitButton.disabled = true;
+                
+                // Optional: Add a timeout to re-enable the button after a certain time
+                setTimeout(function() {
+                    if (buttonLoading.style.display === 'inline-block') {
+                        buttonDefault.style.display = 'inline-block';
+                        buttonLoading.style.display = 'none';
+                        submitButton.disabled = false;
+                    }
+                }, 60000); // Re-enable after 60 seconds if no response
+            } else {
+                // Form is invalid, prevent submission
+                event.preventDefault();
+                event.stopPropagation();
+                predictionForm.classList.add('was-validated');
+            }
+        });
+
+        console.log("Form initialized with default values!");
+    });
+</script>
+{% endblock %}

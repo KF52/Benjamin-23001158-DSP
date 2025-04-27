@@ -1,0 +1,453 @@
+{% extends "base-template.html" %}
+
+{% block title %}Admin Analytics Dashboard{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .card {
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+    .stat-card {
+        text-align: center;
+        padding: 15px;
+    }
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .stat-label {
+        font-size: 14px;
+        color: #6c757d;
+    }
+    .filter-section {
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Admin Analytics Dashboard</h1>
+    
+    <!-- Date Range Filter -->
+    <div class="filter-section card">
+        <div class="card-body">
+            <form method="get" action="{% url 'admin_analytics' %}" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label for="date_range" class="col-form-label">Date Range:</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" name="date_range" id="date_range" onchange="this.form.submit()">
+                        <option value="7" {% if date_range == '7' %}selected{% endif %}>Last 7 days</option>
+                        <option value="30" {% if date_range == '30' %}selected{% endif %}>Last 30 days</option>
+                        <option value="90" {% if date_range == '90' %}selected{% endif %}>Last 90 days</option>
+                        <option value="365" {% if date_range == '365' %}selected{% endif %}>Last year</option>
+                        <option value="all" {% if date_range == 'all' %}selected{% endif %}>All time</option>
+                    </select>
+                </div>
+                <div class="col-auto ms-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Export Data
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="{% url 'export_analytics_data' %}?type=user">Export User Data</a></li>
+                            <li><a class="dropdown-item" href="{% url 'export_analytics_data' %}?type=financial">Export Financial Data</a></li>
+                            <li><a class="dropdown-item" href="{% url 'export_analytics_data' %}?type=prediction">Export Prediction Data</a></li>
+                            <li><a class="dropdown-item" href="{% url 'export_analytics_data' %}?type=system">Export System Health Data</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- User Metrics Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2>User Metrics</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ user_metrics.total_users }}</div>
+                                <div class="stat-label">Total Users</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ user_metrics.new_users }}</div>
+                                <div class="stat-label">New Users</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ user_metrics.active_users }}</div>
+                                <div class="stat-label">Active Users</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ user_metrics.inactive_users }}</div>
+                                <div class="stat-label">Inactive Users</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mt-4">Top Active Users</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Predictions Made</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in user_metrics.top_users %}
+                                <tr>
+                                    <td>{{ user.user__name }}</td>
+                                    <td>{{ user.user__email }}</td>
+                                    <td>{{ user.prediction_count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No user activity data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Prediction Metrics Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2>Prediction Metrics</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-4"> 
+                            <div class="stat-card">
+                                <div class="stat-value">{{ prediction_metrics.total_predictions }}</div>
+                                <div class="stat-label">Total Predictions</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="stat-card">
+                                <div class="stat-value">{{ prediction_metrics.feedback_provided }}</div>
+                                <div class="stat-label">Feedback Provided</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="stat-card">
+                                <div class="stat-value">{{ prediction_metrics.accuracy_rate }}%</div>
+                                <div class="stat-label">Accuracy Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Predictions Over Time</h4>
+                            <canvas id="predictionsChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Accuracy Over Time</h4>
+                            <canvas id="accuracyChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="alert alert-warning">
+                                <strong>Disputed Predictions:</strong> {{ prediction_metrics.disputed_predictions }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <strong>Needing Review:</strong> {{ prediction_metrics.needs_review }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Health Metrics Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2>System Health Metrics</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ system_health.avg_response_time }} ms</div>
+                                <div class="stat-label">Avg. Response Time</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-value">{{ system_health.error_rate }}%</div>
+                                <div class="stat-label">Error Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4>Response Time Over Time</h4>
+                            <canvas id="responseTimeChart"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>Status Code Distribution</h4>
+                            <canvas id="statusCodeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Chart colors
+    const chartColors = {
+        blue: 'rgba(54, 162, 235, 0.7)',
+        blueLight: 'rgba(54, 162, 235, 0.4)',
+        green: 'rgba(75, 192, 192, 0.7)',
+        greenLight: 'rgba(75, 192, 192, 0.4)',
+        red: 'rgba(255, 99, 132, 0.7)',
+        redLight: 'rgba(255, 99, 132, 0.4)',
+        orange: 'rgba(255, 159, 64, 0.7)',
+        orangeLight: 'rgba(255, 159, 64, 0.4)',
+        purple: 'rgba(153, 102, 255, 0.7)',
+        purpleLight: 'rgba(153, 102, 255, 0.4)',
+        yellow: 'rgba(255, 205, 86, 0.7)',
+        yellowLight: 'rgba(255, 205, 86, 0.4)',
+        grey: 'rgba(201, 203, 207, 0.7)',
+        greyLight: 'rgba(201, 203, 207, 0.4)'
+    };
+
+    // Common chart options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+            }
+        }
+    };
+
+    // User Growth Chart
+    const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+    const userGrowthChart = new Chart(userGrowthCtx, {
+        type: 'line',
+        data: {
+            labels: JSON.parse('{{ user_metrics.user_growth_labels|safe }}'),
+            datasets: [{
+                label: 'Total Users',
+                data: JSON.parse('{{ user_metrics.user_growth_data|safe }}'),
+                borderColor: chartColors.blue,
+                backgroundColor: chartColors.blueLight,
+                tension: 0.1,
+                fill: true
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Users'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
+
+    // Role Distribution Chart
+    const roleDistributionCtx = document.getElementById('roleDistributionChart').getContext('2d');
+    const roleDistributionChart = new Chart(roleDistributionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: JSON.parse('{{ user_metrics.role_labels|safe }}'),
+            datasets: [{
+                label: 'Users by Role',
+                data: JSON.parse('{{ user_metrics.role_data|safe }}'),
+                backgroundColor: [
+                    chartColors.blue,
+                    chartColors.green,
+                    chartColors.red,
+                    chartColors.orange,
+                    chartColors.purple
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            ...commonOptions
+        }
+    });
+
+    // Predictions Chart
+    const predictionsCtx = document.getElementById('predictionsChart').getContext('2d');
+    const predictionsChart = new Chart(predictionsCtx, {
+        type: 'bar',
+        data: {
+            labels: JSON.parse('{{ prediction_metrics.prediction_labels|safe }}'),
+            datasets: [{
+                label: 'Predictions',
+                data: JSON.parse('{{ prediction_metrics.prediction_data|safe }}'),
+                backgroundColor: chartColors.purple,
+                borderColor: chartColors.purpleLight,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Predictions'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
+
+    // Accuracy Chart
+    const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+    const accuracyChart = new Chart(accuracyCtx, {
+        type: 'line',
+        data: {
+            labels: JSON.parse('{{ prediction_metrics.accuracy_labels|safe }}'),
+            datasets: [{
+                label: 'Accuracy (%)',
+                data: JSON.parse('{{ prediction_metrics.accuracy_data|safe }}'),
+                borderColor: chartColors.red,
+                backgroundColor: chartColors.redLight,
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Accuracy (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
+
+    // Response Time Chart
+    const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+    const responseTimeChart = new Chart(responseTimeCtx, {
+        type: 'line',
+        data: {
+            labels: JSON.parse('{{ system_health.response_time_labels|safe }}'),
+            datasets: [{
+                label: 'Avg. Response Time (ms)',
+                data: JSON.parse('{{ system_health.response_time_data|safe }}'),
+                borderColor: chartColors.orange,
+                backgroundColor: chartColors.orangeLight,
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Response Time (ms)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
+
+    // Status Code Chart
+    const statusCodeCtx = document.getElementById('statusCodeChart').getContext('2d');
+    const statusCodeChart = new Chart(statusCodeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: JSON.parse('{{ system_health.status_code_labels|safe }}'),
+            datasets: [{
+                label: 'Status Codes',
+                data: JSON.parse('{{ system_health.status_code_data|safe }}'),
+                backgroundColor: [
+                    chartColors.green,
+                    chartColors.blue,
+                    chartColors.orange,
+                    chartColors.red,
+                    chartColors.grey
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            ...commonOptions
+        }
+    });
+</script>
+{% endblock %}
