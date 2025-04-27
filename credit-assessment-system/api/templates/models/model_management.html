@@ -123,7 +123,7 @@
                                     <h5 class="card-title mb-1">{{ active_model.model_name }}</h5>
                                     <p class="card-text text-muted mb-1">Type: {{ active_model.model_type }}</p>
                                     <p class="card-text text-muted mb-1">Scaling: {% if active_model.requires_scaling %}Required{% else %}Not Required{% endif %}</p>
-                                    <p class="card-text text-muted mb-1">Uploaded by: {{ active_model.uploaded_by.name }} on {{ active_model.uploaded_at|date:"F j, Y" }}</p>
+                                    <p class="card-text text-muted mb-1">Uploaded by: {{ active_model.uploaded_by.name }} on {{ active_model.upload_date|date:"F j, Y" }}</p>
                                     {% if active_model.description %}
                                         <p class="card-text mt-2">{{ active_model.description }}</p>
                                     {% endif %}
