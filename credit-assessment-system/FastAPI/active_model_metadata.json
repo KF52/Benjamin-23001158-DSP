@@ -1,1 +1,1 @@
-{"name": "catboost", "description": "Auto-registered from filesystem", "model_type": "Unknown", "requires_scaling": false, "file_type": "pkl", "last_updated": "2025-04-27T23:52:48.403650"}
+{"name": "lgbm", "description": "", "model_type": "lgbm", "requires_scaling": false, "file_type": "pkl", "last_updated": "2025-04-28T10:04:03.578958"}

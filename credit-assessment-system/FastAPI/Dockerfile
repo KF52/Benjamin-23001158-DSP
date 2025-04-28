@@ -1,5 +1,4 @@
 FROM python:3.10-slim
-RUN apt-get update && apt-get install -y curl
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -7,6 +6,12 @@ ENV PYTHONUNBUFFERED=1 \
 
 # Set the working directory
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-utils \
+    curl \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 COPY requirements.txt .
