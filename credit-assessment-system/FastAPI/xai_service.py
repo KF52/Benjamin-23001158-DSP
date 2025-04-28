@@ -47,7 +47,7 @@ class ShapExplainer:
                 print(f"== XAI DEBUG MSG == Detected model class: {model_type}")
                 
                 # Trees-Based models
-                if any(tree_name in model_type.lower() for tree_name in ["randomrorestclassifier", "xgbclassifier", "tree", "forest", "gbm", "xgboost", "lgbm", "catboost", "gradientboosting"]):
+                if any(tree_name in model_type.lower() for tree_name in ["randomrorestclassifier", "xgbclassifier", "lgbmclassifier" "tree", "forest", "gbm", "xgboost", "lgbm", "catboost", "gradientboosting"]):
                     print("== XAI DEBUG MSG == Using TreeExplainer for tree-based model")
                     self.explainer = shap.TreeExplainer(self.model)
                 
