@@ -91,6 +91,7 @@ class ModelManager:
                     self.requires_scaling = False
                     
                 print("Active model loaded successfully")
+                print(f"Model type: {type(self.active_model).__name__}")
                 return True
                 
         except Exception as e:
@@ -177,7 +178,7 @@ class PredictionResponse(BaseModel):
     explanation: Dict[str, Any] = Field(..., description="SHAP explanation for the prediction")
     
 # Preprocessing Function
-def preprocess_input(input_data):
+def preprocess_input(input_data, model_type=None):
     # Convert to dictionary
     data_dict = input_data.copy()
 
@@ -190,7 +191,7 @@ def preprocess_input(input_data):
                     data_dict[field] = 1
                 elif data_dict[field].lower() == 'no':
                     data_dict[field] = 0
-    
+
     # Apply one-hot encoding from saved encoder
     if metadata['onehot_encoding_columns']:
         # Create DataFrame with just the columns needed for one-hot encoding
@@ -205,6 +206,30 @@ def preprocess_input(input_data):
         # Remove original categorical columns
         for col in metadata['onehot_encoding_columns']:
             del data_dict[col]
+
+    # LightGBM-specific feature name normalization AFTER one-hot encoding
+    if model_type:
+
+        if 'lightgbm' in str(model_type).lower() or 'lgbm' in str(model_type).lower():
+            
+            # Log all keys in data_dict to see what feature names are actually available
+            print("Available feature names:")
+            for key in sorted(data_dict.keys()):
+                print(f"  - {key}")
+            
+            # Look for features with partial matches and normalize them
+            keys_to_rename = {}
+            for key in data_dict.keys():
+                if 'Education_Level_High School' in key or ('Education_Level' in key and 'High School' in key):
+                    keys_to_rename[key] = 'Education_Level_High_School'
+                elif 'Loan_Purpose_Debt Consolidation' in key or ('Loan_Purpose' in key and 'Debt Consolidation' in key):
+                    keys_to_rename[key] = 'Loan_Purpose_Debt_Consolidation'
+            
+            # Apply the renames
+            for old_key, new_key in keys_to_rename.items():
+                data_dict[new_key] = data_dict[old_key]
+                print(f"Remapped feature: {old_key} → {new_key}")
+                del data_dict[old_key]
     
     return data_dict
 
@@ -274,6 +299,8 @@ async def predict(
         try:
             model = model_manager.get_model()
 
+            model_type = type(model).__name__
+
             # Get feature names based on model type
             if hasattr(model, 'feature_names_in_'):
                 # scikit-learn models
@@ -302,7 +329,7 @@ async def predict(
         print(json.dumps(input_data, indent=2, default=str))
 
         # Preprocess the input data using the saved preprocessors
-        preprocessed_data = preprocess_input(input_data)
+        preprocessed_data = preprocess_input(input_data, model_type=model_type)
 
         # Print preprocessed data
         print("\n===== PREPROCESSED DATA =====")
@@ -340,6 +367,19 @@ async def predict(
             print(f"Warning: Features missing for model: {missing_features}")
         if extra_features:
             print(f"Warning: Extra features not used by model: {extra_features}")
+
+
+        """
+        # Print model's required features in a structured way
+        print("\n===== MODEL REQUIRED FEATURES =====")
+        print(f"Model type: {model_type}")
+        print(f"Total features required: {len(expected_features)}")
+        # Print all feature names, sorted alphabetically
+        print("\nAll required feature names:")
+        for i, feature in enumerate(sorted(expected_features)):
+            print(f"  {i+1}. {feature}")
+
+        """
         
         # Make prediction
         prediction = model.predict(model_input)[0]
@@ -379,6 +419,7 @@ async def predict(
             explanation = {
                 "summary_plot_featureimportance": "",
                 "waterfall_plot": "",
+                "force_plot": "",
                 "top_features": [],
                 "base_value": 0.0,
                 "shap_values": [],
