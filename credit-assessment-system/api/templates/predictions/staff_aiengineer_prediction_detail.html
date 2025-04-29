@@ -131,108 +131,109 @@
                 <h5 class="mb-0">Submitted Financial Details</h5>
             </div>
             <div class="card-body">
-            </div>
-            <div class="accordion" id="inputDataAccordion">
-                <!-- Personal Information -->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="personalInfoHeading">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#personalInfo" aria-expanded="false" aria-controls="personalInfo">
-                            Personal Information
-                        </button>
-                    </h2>
-                    <div id="personalInfo" class="accordion-collapse collapse" aria-labelledby="personalInfoHeading" data-bs-parent="#inputDataAccordion">
-                        <div class="accordion-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Age:</strong> {{ input_data.Age }} years</p>
-                                    <p><strong>Employment Status:</strong> {{ input_data.Employment_Status }}</p>
-                                    <p><strong>Experience:</strong> {{ input_data.Experience }} years</p>
-                                    <p><strong>Education Level:</strong> {{ input_data.Education_Level }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Marital Status:</strong> {{ input_data.Marital_Status }}</p>
-                                    <p><strong>Dependents:</strong> {{ input_data.Number_Of_Dependents }}</p>
-                                    <p><strong>Job Tenure:</strong> {{ input_data.Job_Tenure }} years</p>
-                                    <p><strong>Home Ownership:</strong> {{ input_data.Home_Ownership_Status }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Financial Information -->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="financialInfoHeading">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#financialInfo" aria-expanded="false" aria-controls="financialInfo">
-                            Financial Information
-                        </button>
-                    </h2>
-                    <div id="financialInfo" class="accordion-collapse collapse" aria-labelledby="financialInfoHeading" data-bs-parent="#inputDataAccordion">
-                        <div class="accordion-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6 class="border-bottom pb-1 mb-2">Income & Debt</h6>
-                                    <p><strong>Annual Income:</strong> ${{ input_data.Annual_Income|floatformat:2 }}</p>
-                                    <p><strong>Monthly Income:</strong> ${{ input_data.Monthly_Income|floatformat:2 }}</p>
-                                    <p><strong>Monthly Debt Payments:</strong> ${{ input_data.Monthly_Debt_Payments|floatformat:2 }}</p>
-                                    <p><strong>Debt To Income Ratio:</strong> {{ input_data.Debt_To_Income_Ratio|floatformat:4 }}</p>
-                                    <p><strong>Total Debt To Income Ratio:</strong> {{ input_data.Total_Debt_To_Income_Ratio|floatformat:4 }}</p>
-                                    <p><strong>Credit Score:</strong> {{ input_data.Credit_Score }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="border-bottom pb-1 mb-2">Account Balances</h6>
-                                    <p><strong>Savings Account:</strong> ${{ input_data.Savings_Account_Balance|floatformat:2 }}</p>
-                                    <p><strong>Checking Account:</strong> ${{ input_data.Checking_Account_Balance|floatformat:2 }}</p>
-                                    <p><strong>Total Assets:</strong> ${{ input_data.Total_Assets|floatformat:2 }}</p>
-                                    <p><strong>Total Liabilities:</strong> ${{ input_data.Total_Liabilities|floatformat:2 }}</p>
-                                    <p><strong>Net Worth:</strong> ${{ input_data.Net_Worth|floatformat:2 }}</p>
-                                    <p><strong>Utility Bills Payment History:</strong> {{ input_data.Utility_Bills_Payment_History|floatformat:2 }}%</p>
+            
+                <div class="accordion" id="inputDataAccordion">
+                    <!-- Personal Information -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="personalInfoHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#personalInfo" aria-expanded="false" aria-controls="personalInfo">
+                                Personal Information
+                            </button>
+                        </h2>
+                        <div id="personalInfo" class="accordion-collapse collapse" aria-labelledby="personalInfoHeading" data-bs-parent="#inputDataAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Age:</strong> {{ input_data.Age }} years</p>
+                                        <p><strong>Employment Status:</strong> {{ input_data.Employment_Status }}</p>
+                                        <p><strong>Experience:</strong> {{ input_data.Experience }} years</p>
+                                        <p><strong>Education Level:</strong> {{ input_data.Education_Level }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Marital Status:</strong> {{ input_data.Marital_Status }}</p>
+                                        <p><strong>Dependents:</strong> {{ input_data.Number_Of_Dependents }}</p>
+                                        <p><strong>Job Tenure:</strong> {{ input_data.Job_Tenure }} years</p>
+                                        <p><strong>Home Ownership:</strong> {{ input_data.Home_Ownership_Status }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Credit Information -->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="creditInfoHeading">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#creditInfo" aria-expanded="false" aria-controls="creditInfo">
-                            Credit Information
-                        </button>
-                    </h2>
-                    <div id="creditInfo" class="accordion-collapse collapse" aria-labelledby="creditInfoHeading" data-bs-parent="#inputDataAccordion">
-                        <div class="accordion-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Credit Card Utilization Rate:</strong> {{ input_data.Credit_Card_Utilization_Rate|floatformat:2 }}%</p>
-                                    <p><strong>Number Of Open Credit Lines:</strong> {{ input_data.Number_Of_Open_Credit_Lines }}</p>
-                                    <p><strong>Number Of Credit Inquiries:</strong> {{ input_data.Number_Of_Credit_Inquiries }}</p>
-                                    <p><strong>Payment History:</strong> {{ input_data.Payment_History|floatformat:1 }}%</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Length Of Credit History:</strong> {{ input_data.Length_Of_Credit_History }} years</p>
-                                    <p><strong>Bankruptcy History:</strong> {{ input_data.Bankruptcy_History }}</p>
-                                    <p><strong>Previous Loan Defaults:</strong> {{ input_data.Previous_Loan_Defaults }}</p>
+                    
+                    <!-- Financial Information -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="financialInfoHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#financialInfo" aria-expanded="false" aria-controls="financialInfo">
+                                Financial Information
+                            </button>
+                        </h2>
+                        <div id="financialInfo" class="accordion-collapse collapse" aria-labelledby="financialInfoHeading" data-bs-parent="#inputDataAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="border-bottom pb-1 mb-2">Income & Debt</h6>
+                                        <p><strong>Annual Income:</strong> ${{ input_data.Annual_Income|floatformat:2 }}</p>
+                                        <p><strong>Monthly Income:</strong> ${{ input_data.Monthly_Income|floatformat:2 }}</p>
+                                        <p><strong>Monthly Debt Payments:</strong> ${{ input_data.Monthly_Debt_Payments|floatformat:2 }}</p>
+                                        <p><strong>Debt To Income Ratio:</strong> {% widthratio input_data.Debt_To_Income_Ratio 1 100 %}%</p>
+                                        <p><strong>Total Debt To Income Ratio:</strong> {% widthratio input_data.Total_Debt_To_Income_Ratio 1 100 %}%</p>
+                                        <p><strong>Credit Score:</strong> {{ input_data.Credit_Score }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="border-bottom pb-1 mb-2">Account Balances</h6>
+                                        <p><strong>Savings Account:</strong> ${{ input_data.Savings_Account_Balance|floatformat:2 }}</p>
+                                        <p><strong>Checking Account:</strong> ${{ input_data.Checking_Account_Balance|floatformat:2 }}</p>
+                                        <p><strong>Total Assets:</strong> ${{ input_data.Total_Assets|floatformat:2 }}</p>
+                                        <p><strong>Total Liabilities:</strong> ${{ input_data.Total_Liabilities|floatformat:2 }}</p>
+                                        <p><strong>Net Worth:</strong> ${{ input_data.Net_Worth|floatformat:2 }}</p>
+                                        <p><strong>Utility Bills Payment History:</strong> {% widthratio input_data.Utility_Bills_Payment_History 1 100 %}%</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Loan Information -->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="loanInfoHeading">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#loanInfo" aria-expanded="false" aria-controls="loanInfo">
-                            Loan Information
-                        </button>
-                    </h2>
-                    <div id="loanInfo" class="accordion-collapse collapse" aria-labelledby="loanInfoHeading" data-bs-parent="#inputDataAccordion">
-                        <div class="accordion-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Loan Purpose:</strong> {{ input_data.Loan_Purpose }}</p>
-                                    <p><strong>Loan Amount:</strong> ${{ input_data.Loan_Amount|floatformat:2 }}</p>
-                                    <p><strong>Loan Duration:</strong> {{ input_data.Loan_Duration }} months</p>
+                    
+                    <!-- Credit Information -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="creditInfoHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#creditInfo" aria-expanded="false" aria-controls="creditInfo">
+                                Credit Information
+                            </button>
+                        </h2>
+                        <div id="creditInfo" class="accordion-collapse collapse" aria-labelledby="creditInfoHeading" data-bs-parent="#inputDataAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Credit Card Utilization Rate:</strong> {% widthratio input_data.Credit_Card_Utilization_Rate 1 100 %}%</p>
+                                        <p><strong>Number Of Open Credit Lines:</strong> {{ input_data.Number_Of_Open_Credit_Lines }}</p>
+                                        <p><strong>Number Of Credit Inquiries:</strong> {{ input_data.Number_Of_Credit_Inquiries }}</p>
+                                        <p><strong>Payment History:</strong> {% widthratio input_data.Payment_History 1 100 %}%</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Length Of Credit History:</strong> {{ input_data.Length_Of_Credit_History }} years</p>
+                                        <p><strong>Bankruptcy History:</strong> {{ input_data.Bankruptcy_History }}</p>
+                                        <p><strong>Previous Loan Defaults:</strong> {{ input_data.Previous_Loan_Defaults }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Loan Information -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="loanInfoHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#loanInfo" aria-expanded="false" aria-controls="loanInfo">
+                                Loan Information
+                            </button>
+                        </h2>
+                        <div id="loanInfo" class="accordion-collapse collapse" aria-labelledby="loanInfoHeading" data-bs-parent="#inputDataAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>Loan Purpose:</strong> {{ input_data.Loan_Purpose }}</p>
+                                        <p><strong>Loan Amount:</strong> ${{ input_data.Loan_Amount|floatformat:2 }}</p>
+                                        <p><strong>Loan Duration:</strong> {{ input_data.Loan_Duration }} months</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

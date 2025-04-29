@@ -120,6 +120,7 @@ model_manager = ModelManager()
 # Load the serialized preprocessors
 standard_scaler = joblib.load('standard_scaler.pkl')
 onehot_encoder = joblib.load('onehot_encoder.pkl')
+ordinal_encoder = joblib.load('ordinal_encoder.pkl')
 metadata = joblib.load('preprocessing_metadata.pkl')
 
 # Load training data reference for distance-based confidence calculation
@@ -206,6 +207,16 @@ def preprocess_input(input_data, model_type=None):
         # Remove original categorical columns
         for col in metadata['onehot_encoding_columns']:
             del data_dict[col]
+
+    # Apply Ordinal Encoding from saved encoder
+    if metadata['ordinal_encoding_columns']:
+        # Create DataFrame with just the columns needed for ordinal encoding
+        ordinal_df = pd.DataFrame({col: [data_dict[col]] for col in metadata['ordinal_encoding_columns']})
+        # Transform using the loaded encoder
+        encoded_array = ordinal_encoder.transform(ordinal_df)
+        # Add encoded features to data_dict
+        for i, col in enumerate(metadata['ordinal_encoding_columns']):
+            data_dict[col] = encoded_array[0, i]
 
     # LightGBM-specific feature name normalization AFTER one-hot encoding
     if model_type:

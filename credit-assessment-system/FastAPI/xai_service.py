@@ -17,6 +17,14 @@ class ShapExplainer:
         self.explainer = None
         self.X_train = training_data
 
+        self.education_mapping = {
+            0.0: "High School",
+            1.0: "Bachelor's",
+            2.0: "Master's",
+            3.0: "PhD",
+            4.0: "Associate"
+        }
+
         if model is not None:
             print(f"== XAI DEBUG MSG == Model of type {type(model)} provided at initialization")
         if feature_names is not None:
@@ -460,7 +468,7 @@ class ShapExplainer:
         
         return normalized_top_features
 
-    def _generate_explanation_summary(self, shap_values_for_features, prediction_metrics, prediction_class=1):
+    def _generate_explanation_summary(self, shap_values_for_features, prediction_metrics, prediction_class=1, input_data=None):
         """Generate human-readable explanations"""
         print("== XAI DEBUG MSG == Generating plain language summary")
         
@@ -532,36 +540,21 @@ class ShapExplainer:
         for idx, (feature, impact) in enumerate(top_negative):
             print(f"  {idx+1}. {feature}: -{abs(impact):.4f}")
         
-        # Format feature names to be more readable
-        def format_feature_name(name):
-            # Make feature names more readable
-            name = name.replace('_', ' ')
-            # Handle specific cases
-            if name.startswith("Employment Status"):
-                return name.replace("Employment Status", "Being")
-            if name.startswith("Education Level"):
-                return name.replace("Education Level", "Having")
-            if name.startswith("Home Ownership Status"):
-                return name.replace("Home Ownership Status", "Having home status")
-            if name.startswith("Loan Purpose"):
-                return name.replace("Loan Purpose", "Loan for")
-            return name.title()
-        
         # Create the readable summary with consistent interpretation
         human_summary = {
             "decision": prediction_value,
             "confidence": f"{(probability)*100:.2f}%",
             "certainty_level": "high" if abs(probability - 0.5) > 0.3 else "medium" if abs(probability - 0.5) > 0.15 else "low",
             "positive_factors": [
-                {"name": format_feature_name(feature), 
+                {"name": self.format_feature_name(feature, input_data), 
                 "impact": f"+{value:.4f}", 
-                "description": f"Your {format_feature_name(feature).lower()} positively influenced the {'rejection' if prediction_class == 0 else 'approval'}."} 
+                "description": f"Your {self.format_feature_name(feature, input_data).lower()} positively influenced the {'rejection' if prediction_class == 0 else 'approval'}."} 
                 for feature, value in top_positive
             ],
             "negative_factors": [
-                {"name": format_feature_name(feature), 
+                {"name": self.format_feature_name(feature, input_data), 
                 "impact": f"-{abs(value):.4f}", 
-                "description": f"Your {format_feature_name(feature).lower()} negatively influenced the {'rejection' if prediction_class == 0 else 'approval'}."} 
+                "description": f"Your {self.format_feature_name(feature, input_data).lower()} negatively influenced the {'rejection' if prediction_class == 0 else 'approval'}."} 
                 for feature, value in top_negative
             ]
         }
@@ -691,7 +684,8 @@ class ShapExplainer:
             human_summary = self._generate_explanation_summary(
                 shap_data['shap_values_for_features'], 
                 prediction_metrics, 
-                prediction_class
+                prediction_class,
+                shap_data['input_data']
             )
 
             # Decision threshold
@@ -731,3 +725,27 @@ class ShapExplainer:
             import traceback
             print(f"== XAI DEBUG MSG == Traceback: {traceback.format_exc()}")
             raise
+    
+    # Format feature names to be more readable
+    def format_feature_name(self, name, input_data=None):
+            # Make feature names more readable
+            name = name.replace('_', ' ')
+
+            # Handle Education Level specifically 
+            if name.startswith("Education Level"):
+                # If we have input data to extract the original value
+                if input_data is not None and isinstance(input_data, pd.DataFrame) and len(input_data) > 0:
+                    encoded_value = input_data.iloc[0].get("Education_Level")
+                    if encoded_value is not None and float(encoded_value) in self.education_mapping:
+                        education = self.education_mapping[float(encoded_value)]
+                        return f"Having {education} Education"
+                return name.replace("Education Level", "Having")
+            
+            # Handle specific cases
+            if name.startswith("Employment Status"):
+                return name.replace("Employment Status", "Being")
+            if name.startswith("Home Ownership Status"):
+                return name.replace("Home Ownership Status", "Having home status")
+            if name.startswith("Loan Purpose"):
+                return name.replace("Loan Purpose", "Loan for")
+            return name.title()
