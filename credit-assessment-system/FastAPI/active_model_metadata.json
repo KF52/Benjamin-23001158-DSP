@@ -1,1 +1,1 @@
-{"name": "lgbm", "description": "", "model_type": "Light Gradient Boosting Machine", "requires_scaling": false, "file_type": "pkl", "last_updated": "2025-04-29T21:07:52.532833"}
+{"name": "cb", "description": "", "model_type": "catboost", "requires_scaling": false, "file_type": "pkl", "last_updated": "2025-04-30T16:06:57.182579"}
