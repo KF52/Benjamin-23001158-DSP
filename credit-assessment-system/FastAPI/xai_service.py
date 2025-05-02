@@ -147,7 +147,6 @@ class ShapExplainer:
             print("== XAI DEBUG MSG == Summary plot created successfully")
         except Exception as e:
             print(f"== XAI DEBUG MSG == Error creating summary plot: {str(e)}")
-            # Add fallback logic here (same as your original code)
             
         # Save plot to base64 string
         buf = BytesIO()
@@ -309,7 +308,7 @@ class ShapExplainer:
         plt.close()
         buf.seek(0)
         return base64.b64encode(buf.read()).decode('utf-8')
-
+    
     def _calculate_shap_values(self, input_data, prediction_class=1):
         """Calculate SHAP values for the input data"""
         print("== XAI DEBUG MSG == Calculating SHAP values")
@@ -369,6 +368,8 @@ class ShapExplainer:
             'is_multiclass': is_multiclass,
             'input_data': input_data
         }
+
+    
 
     def _compute_prediction_metrics(self, shap_values_for_features, expected_value, prediction_class=1):
         """Compute prediction metrics from SHAP values"""
@@ -611,39 +612,6 @@ class ShapExplainer:
             print(f"== XAI DEBUG MSG == Input data shape: {input_data.shape}")
         
         try:
-            """
-            # If prediction_class is not specified, get metrics for both classes and determine which one to use
-            if prediction_class is None:
-                # Get metrics for both classes
-                approval_metrics = self._get_approval_metrics(input_data)
-                rejection_metrics = self._get_rejection_metrics(input_data)
-                
-                # Decision threshold
-                decision_threshold = 0.5
-                
-                # Determine which class has higher probability
-                if approval_metrics['class_probability'] > decision_threshold:
-                    prediction_class = 1
-                    print(f"== XAI DEBUG MSG == Model predicted approval with probability {approval_metrics['class_probability']:.4f}")
-                    metrics = approval_metrics
-                else:
-                    prediction_class = 0
-                    print(f"== XAI DEBUG MSG == Model predicted rejection with probability {rejection_metrics['class_probability']:.4f}")
-                    metrics = rejection_metrics
-            else:
-                # Use the specified prediction class
-                print(f"== XAI DEBUG MSG == Using specified prediction class: {prediction_class}")
-                if prediction_class == 1:
-                    metrics = self._get_approval_metrics(input_data)
-                else:
-                    metrics = self._get_rejection_metrics(input_data)
-            
-            # Get the data from the selected metrics
-            shap_data = metrics['shap_data']
-            prediction_metrics = metrics['prediction_metrics']
-
-            """
-
             # Step 1: Calculate SHAP values
             shap_data = self._calculate_shap_values(input_data, prediction_class)
             

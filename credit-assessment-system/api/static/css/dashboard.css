@@ -6,8 +6,8 @@
     border-left: 4px solid #dc3545; /* Red for admin */
 }
 
-.finance-dashboard .dashboard-card {
-    border-left: 4px solid #198754; /* Green for finance */
+.staff-dashboard .dashboard-card {
+    border-left: 4px solid #198754; /* Green for staff */
 }
 
 .ai-dashboard .dashboard-card {

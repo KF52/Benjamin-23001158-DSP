@@ -123,7 +123,7 @@ onehot_encoder = joblib.load('onehot_encoder.pkl')
 ordinal_encoder = joblib.load('ordinal_encoder.pkl')
 metadata = joblib.load('preprocessing_metadata.pkl')
 
-# Load training data reference for distance-based confidence calculation
+# Load training data reference 
 X_train_reference = joblib.load('X_train.pkl')
 print(f"Training reference data loaded successfully: {len(X_train_reference)} samples")
 
@@ -534,6 +534,3 @@ async def update_reference_data(current_user: dict = Depends(get_current_user)):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8088, reload=True, log_level="debug")
-
-# docker-compose build ml_api
-# docker-compose up -d ml_api
