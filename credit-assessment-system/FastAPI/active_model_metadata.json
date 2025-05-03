@@ -1,1 +1,1 @@
-{"name": "cb", "description": "", "model_type": "catboost", "requires_scaling": false, "file_type": "pkl", "last_updated": "2025-04-30T16:06:57.182579"}
+{"name": "xgb", "description": "", "model_type": "XGBoost", "requires_scaling": false, "file_type": "pkl", "last_updated": "2025-05-03T02:09:09.351512"}
