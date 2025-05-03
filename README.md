@@ -36,7 +36,7 @@ The system bridges the gap between complex AI decision-making and human understa
 - PostgreSQL database
 
 **ML Models:**
-- CatBoost Classifier
+- XGBoost Classifier
 
 **Explainable AI:**
 - SHAP (SHapley Additive exPlanations)
